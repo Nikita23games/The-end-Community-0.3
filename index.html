@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE END | SYSTEM V22</title>
+    <title>THE END | SYSTEM V23</title>
     <style>
         body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 10px; overflow-x: hidden; }
         
@@ -19,8 +19,8 @@
             20%, 24%, 55% { opacity: 0.3; }
         }
 
-        .nav-tabs { display: flex; max-width: 450px; margin: 0 auto; gap: 10px; }
-        .nav-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #f00; color: #f00; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .nav-tabs { display: flex; max-width: 450px; margin: 0 auto; gap: 5px; }
+        .nav-btn { flex: 1; padding: 10px 5px; background: #111; border: 1px solid #f00; color: #f00; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 10px; }
         .nav-btn.active { background: #f00; color: #000; }
 
         .box { border: 2px solid #f00; padding: 20px; background: #0a0a0a; max-width: 450px; margin: 10px auto; box-shadow: 0 0 15px #f00; }
@@ -36,7 +36,7 @@
         .lvl-tag { background: #f00; color: #000; padding: 2px 5px; font-size: 10px; font-weight: bold; }
         .title-tag { color: #ffd700; font-size: 10px; text-shadow: 0 0 5px #aa8800; margin-left: 5px; }
 
-        .code-err { color: #f00; font-size: 10px; text-align: center; margin-top: 5px; display: none; }
+        .code-err { color: #f00; font-size: 11px; text-align: center; margin-top: 10px; display: none; letter-spacing: 1px; }
         .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px dashed #300; }
         
         .post { border-left: 3px solid #f00; padding: 10px; background: #111; margin-top: 15px; display: flex; gap: 12px; position: relative; }
@@ -69,7 +69,8 @@
 
     <div id="ui-nav" class="nav-tabs" style="display:none; margin-top:10px;">
         <button id="btn-comm" class="nav-btn active" onclick="showTab('comm')">COMMUNITY</button>
-        <button id="btn-shop" class="nav-btn" onclick="showTab('shop')">BLACK MARKET</button>
+        <button id="btn-shop" class="nav-btn" onclick="showTab('shop')">MARKET</button>
+        <button id="btn-void" class="nav-btn" onclick="showTab('void')">VOID CODES</button>
     </div>
 
     <div id="ui-auth" class="box">
@@ -96,25 +97,25 @@
     <div id="tab-shop" class="box" style="display:none;">
         <h3 style="color:#f00; text-align:center; margin-bottom: 20px;">TITLES MARKET</h3>
         <div id="shop-list"></div>
-        <div style="margin-top: 30px; border-top: 2px solid #300; padding-top: 20px;">
-            <h4 style="text-align: center; color: #500; margin: 0;">SECRET CODES</h4>
-            <input type="text" id="in-code" placeholder="ENTER CODE...">
-            <div id="code-error" class="code-err">неправильно ввели код</div>
-            <button class="secondary-btn" onclick="useCode()">ACTIVATE</button>
-        </div>
+    </div>
+
+    <div id="tab-void" class="box" style="display:none;">
+        <h3 style="color:#f00; text-align:center; margin-bottom: 20px;">ENTER THE VOID</h3>
+        <p style="font-size: 10px; color: #555; text-align: center;">ВВЕДИТЕ СЕКРЕТНЫЙ ШИФР ДЛЯ ПОЛУЧЕНИЯ НАГРАДЫ</p>
+        <input type="text" id="in-code" placeholder="ENTER CODE...">
+        <div id="code-error" class="code-err">неправильно ввели код</div>
+        <button class="main-btn" onclick="useCode()">ACTIVATE CODE</button>
     </div>
 
     <div id="m-profile" class="overlay">
         <div class="m-content">
-            <div id="m-ava-box" style="width:70px; height:70px; border-radius:50%; border:2px solid #f00; margin:0 auto 10px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:25px;"></div>
+            <div id="m-ava-box" style="width:70px; height:70px; border-radius:50%; border:3px solid #f00; margin:0 auto 10px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:25px;"></div>
             <h3 id="m-nick-display" style="color:#f00; margin:5px 0;"></h3>
             
             <label>MY TITLES:</label>
             <select id="m-title-select"></select>
-
             <label>AVATAR URL:</label>
             <input type="text" id="new-a" placeholder="http://...">
-            
             <div id="m-stats-display" style="font-size: 11px; color: #888; margin: 10px 0;"></div>
             <button class="main-btn" onclick="saveProfileChanges()">SAVE CHANGES</button>
             <button class="secondary-btn" onclick="closeProfile()">CLOSE</button>
@@ -122,8 +123,8 @@
     </div>
 
     <script>
-        const DB_U = 'sys_users_v22';
-        const DB_M = 'sys_msgs_v22';
+        const DB_U = 'sys_users_v23';
+        const DB_M = 'sys_msgs_v23';
         let user = null;
 
         const titlesData = [
@@ -138,17 +139,24 @@
         function showTab(tab) {
             document.getElementById('tab-comm').style.display = tab === 'comm' ? 'block' : 'none';
             document.getElementById('tab-shop').style.display = tab === 'shop' ? 'block' : 'none';
+            document.getElementById('tab-void').style.display = tab === 'void' ? 'block' : 'none';
+            
             document.getElementById('btn-comm').classList.toggle('active', tab === 'comm');
             document.getElementById('btn-shop').classList.toggle('active', tab === 'shop');
+            document.getElementById('btn-void').classList.toggle('active', tab === 'void');
+            
             if(tab === 'shop') renderShop();
+            if(tab === 'void') document.getElementById('code-error').style.display = 'none';
         }
 
         function useCode() {
-            const code = document.getElementById('in-code').value.trim();
+            const codeInput = document.getElementById('in-code');
+            const code = codeInput.value.trim();
             const err = document.getElementById('code-error');
             err.style.display = 'none';
-            if(!user.inventory) user.inventory = [];
-            if(user.usedCodes && user.usedCodes.includes(code)) return alert("USED!");
+
+            if(!user.usedCodes) user.usedCodes = [];
+            if(user.usedCodes.includes(code)) return alert("ЭТОТ ШИФР УЖЕ ИСПОЛЬЗОВАН!");
 
             let reward = null;
             if(code === "Cartoon cat") reward = { k: 20, t: "Мультяшный персонаж" };
@@ -156,15 +164,15 @@
 
             if(reward) {
                 user.karma += reward.k;
-                user.title = reward.t;
                 if(!user.inventory.includes(reward.t)) user.inventory.push(reward.t);
-                if(!user.usedCodes) user.usedCodes = [];
                 user.usedCodes.push(code);
                 updateAllData();
-                alert(`UNLOCKED: ${reward.t}`);
-                document.getElementById('in-code').value = '';
-                refreshUI(); renderShop();
-            } else err.style.display = 'block';
+                alert(`ДОСТУП РАЗРЕШЕН: +${reward.k} 💀 | ТИТУЛ: ${reward.t}`);
+                codeInput.value = '';
+                refreshUI();
+            } else {
+                err.style.display = 'block';
+            }
         }
 
         function login() {
@@ -237,10 +245,9 @@
         }
 
         function buyTitle(name, price) {
-            if(user.inventory.includes(name)) return alert("ALREADY OWNED");
+            if(user.inventory.includes(name)) return;
             if(!confirm(`BUY "${name}"?`)) return;
             user.karma -= price;
-            user.title = name;
             user.inventory.push(name);
             updateAllData(); refreshUI(); renderShop();
         }
@@ -272,7 +279,6 @@
             document.getElementById('m-profile').style.display = 'flex';
             document.getElementById('m-nick-display').innerText = user.nick;
             document.getElementById('new-a').value = user.ava || '';
-            
             const sel = document.getElementById('m-title-select');
             sel.innerHTML = '<option value="">NONE</option>';
             user.inventory.forEach(t => {
@@ -281,7 +287,6 @@
                 if(t === user.title) opt.selected = true;
                 sel.appendChild(opt);
             });
-
             document.getElementById('m-stats-display').innerHTML = `XP: ${user.xp} (L${getLvl(user.xp)}) | KARMA: ${user.karma} 💀`;
             document.getElementById('m-ava-box').innerHTML = drawAva(user.nick, user.ava);
         }
