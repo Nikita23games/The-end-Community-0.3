@@ -4,59 +4,53 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE END | SYSTEM V19</title>
+    <title>THE END | SYSTEM V20</title>
     <style>
         body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 10px; overflow-x: hidden; }
         
         .horror-title {
-            text-align: center;
-            color: #f00;
-            font-size: 28px;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            margin: 20px 0;
-            text-shadow: 0 0 10px #f00, 0 0 20px #500;
-            animation: flicker 3s infinite;
-            font-weight: 900;
+            text-align: center; color: #f00; font-size: 28px; text-transform: uppercase;
+            letter-spacing: 5px; margin: 20px 0; text-shadow: 0 0 10px #f00;
+            animation: flicker 3s infinite; font-weight: 900;
         }
 
         @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; text-shadow: 0 0 10px #f00; }
-            20%, 24%, 55% { opacity: 0.3; text-shadow: none; }
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.3; }
         }
 
-        .box { border: 2px solid #f00; padding: 20px; background: #0a0a0a; max-width: 450px; margin: 20px auto; box-shadow: 0 0 15px #f00; }
+        /* Навигация */
+        .nav-tabs { display: flex; max-width: 450px; margin: 0 auto; gap: 10px; }
+        .nav-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #f00; color: #f00; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .nav-btn.active { background: #f00; color: #000; }
+
+        .box { border: 2px solid #f00; padding: 20px; background: #0a0a0a; max-width: 450px; margin: 10px auto; box-shadow: 0 0 15px #f00; }
         input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #f00; color: #ff0; box-sizing: border-box; outline: none; font-family: inherit; }
         
-        .main-btn { width: 100%; padding: 15px; background: #f00; color: #000; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.2s; }
-        .main-btn:active { background: #ff0; }
-        .secondary-btn { background: none; border: 1px solid #f00; color: #f00; padding: 8px; cursor: pointer; font-size: 10px; margin-top: 5px; width: 100%; text-transform: uppercase; }
+        .main-btn { width: 100%; padding: 15px; background: #f00; color: #000; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .main-btn:disabled { background: #300; color: #666; cursor: not-allowed; }
+        
+        .secondary-btn { background: none; border: 1px solid #f00; color: #f00; padding: 8px; cursor: pointer; font-size: 10px; width: 100%; text-transform: uppercase; margin-top: 5px; }
 
         header { border-bottom: 2px solid #f00; display: none; justify-content: space-between; align-items: center; padding: 10px; background: #050505; position: sticky; top: 0; z-index: 10; }
         .user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .lvl-tag { background: #f00; color: #000; padding: 2px 5px; font-size: 10px; font-weight: bold; border-radius: 2px; }
-        
-        /* Стиль кармы */
-        .karma-count { color: #fff; font-size: 12px; margin-top: 2px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+        .lvl-tag { background: #f00; color: #000; padding: 2px 5px; font-size: 10px; font-weight: bold; }
+        .title-tag { color: #ffd700; font-size: 10px; text-shadow: 0 0 5px #aa8800; margin-left: 5px; }
 
-        .filter-bar { display: flex; gap: 5px; overflow-x: auto; padding: 10px 0; margin-bottom: 10px; border-bottom: 1px solid #300; scrollbar-width: none; }
-        .f-btn { background: #111; border: 1px solid #f00; color: #f00; padding: 4px 8px; font-size: 10px; cursor: pointer; white-space: nowrap; }
-        .f-btn.active { background: #f00; color: #000; }
-        
-        .cat-tag { font-size: 9px; padding: 2px 4px; border: 1px solid #555; margin-right: 5px; text-transform: uppercase; color: #aaa; }
-        .cat-warning { border-color: #f00; color: #f00; font-weight: bold; }
+        /* Магазин */
+        .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px dashed #300; }
+        .shop-name { color: #ffd700; font-weight: bold; }
+        .shop-price { color: #fff; font-size: 12px; }
 
-        .ava { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f00; background: #200; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        .post { border-left: 3px solid #f00; padding: 10px; background: #111; margin-top: 15px; display: flex; gap: 12px; position: relative; }
+        .ava { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f00; background: #200; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .ava img { width: 100%; height: 100%; object-fit: cover; }
         
-        .post { border-left: 3px solid #f00; padding: 10px; background: #111; margin-top: 15px; display: flex; gap: 12px; position: relative; animation: slide 0.3s ease-out; }
-        @keyframes slide { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
-
-        .del-btn { position: absolute; top: 5px; right: 5px; color: #f00; cursor: pointer; font-size: 10px; border: 1px solid #f00; padding: 1px 5px; background: #000; }
+        .cat-tag { font-size: 9px; padding: 2px 4px; border: 1px solid #555; margin-right: 5px; color: #aaa; }
+        .del-btn { position: absolute; top: 5px; right: 5px; color: #f00; cursor: pointer; font-size: 10px; border: 1px solid #f00; padding: 1px 5px; }
 
         .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:100; align-items:center; justify-content:center; }
-        .m-content { background:#000; border:2px solid #f00; padding:25px; width:85%; max-width:320px; text-align:center; box-shadow: 0 0 30px #f00; }
-        #edit-form { display: none; margin-top: 15px; border-top: 1px dashed #f00; padding-top: 10px; }
+        .m-content { background:#000; border:2px solid #f00; padding:25px; width:85%; max-width:320px; text-align:center; }
     </style>
 </head>
 <body>
@@ -69,31 +63,26 @@
             <div style="text-align: right;">
                 <div id="ui-nick" style="font-weight: bold;"></div>
                 <div id="ui-lvl-header" class="lvl-tag"></div>
-                <div id="ui-karma" class="karma-count"></div>
+                <div id="ui-karma" style="color:#fff; font-size:12px;"></div>
             </div>
             <div id="ui-ava" class="ava"></div>
         </div>
     </header>
 
+    <div id="ui-nav" class="nav-tabs" style="display:none; margin-top:10px;">
+        <button id="btn-comm" class="nav-btn active" onclick="showTab('comm')">COMMUNITY</button>
+        <button id="btn-shop" class="nav-btn" onclick="showTab('shop')">BLACK MARKET</button>
+    </div>
+
     <div id="ui-auth" class="box">
-        <h2 style="text-align:center; color:#f00; letter-spacing: 2px;">IDENTIFICATION</h2>
+        <h2 style="text-align:center; color:#f00;">IDENTIFICATION</h2>
         <input type="text" id="in-nick" placeholder="NICKNAME">
         <input type="password" id="in-pass" placeholder="PASSWORD">
         <button class="main-btn" onclick="login()">ENTER SYSTEM</button>
     </div>
 
-    <div id="ui-chat" class="box" style="display:none;">
-        <div class="filter-bar" id="filters">
-            <button class="f-btn active" onclick="setFilter('ALL', this)">ALL</button>
-            <button class="f-btn" onclick="setFilter('ИГРЫ', this)">ИГРЫ</button>
-            <button class="f-btn" onclick="setFilter('ИСТОРИИ', this)">ИСТОРИИ</button>
-            <button class="f-btn" onclick="setFilter('ПОЛИТИКА', this)">ПОЛИТИКА</button>
-            <button class="f-btn" onclick="setFilter('18+', this)">18+</button>
-            <button class="f-btn" onclick="setFilter('ЖЕСТОКОСТЬ', this)">ЖЕСТОКОСТЬ</button>
-        </div>
-
+    <div id="tab-comm" class="box" style="display:none;">
         <textarea id="in-msg" placeholder="ВАШЕ СООБЩЕНИЕ..."></textarea>
-        
         <select id="in-cat">
             <option value="ОБЩЕЕ">ВЫБРАТЬ КАТЕГОРИЮ</option>
             <option value="ИГРЫ">ИГРЫ</option>
@@ -102,44 +91,47 @@
             <option value="18+">18+</option>
             <option value="ЖЕСТОКОСТЬ">ЖЕСТОКОСТЬ</option>
         </select>
-
         <button class="main-btn" onclick="sendMsg()">TRANSMIT (+10 XP)</button>
         <div id="wall"></div>
+    </div>
+
+    <div id="tab-shop" class="box" style="display:none;">
+        <h3 style="color:#f00; text-align:center;">TITLES MARKET</h3>
+        <div id="shop-list"></div>
     </div>
 
     <div id="m-profile" class="overlay">
         <div class="m-content">
             <div id="m-ava-box" style="width:80px; height:80px; border-radius:50%; border:3px solid #f00; margin:0 auto 15px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:30px;"></div>
             <h3 id="m-nick-display" style="color:#f00; margin:5px 0;"></h3>
-            <div id="m-stats-display" style="font-size: 11px; color: #888; margin-bottom: 10px;"></div>
-            
-            <div id="m-view-btns">
-                <button class="secondary-btn" onclick="toggleEdit(true)">EDIT PROFILE</button>
-                <button class="main-btn" onclick="closeProfile()">CLOSE</button>
-            </div>
-
-            <div id="edit-form">
-                <input type="text" id="new-n" placeholder="NEW NICK">
-                <input type="text" id="new-a" placeholder="AVATAR URL">
-                <button class="main-btn" onclick="saveProfile()">SAVE</button>
-                <button class="secondary-btn" onclick="toggleEdit(false)">CANCEL</button>
-            </div>
+            <div id="m-title-display" class="title-tag" style="margin-bottom:10px; font-size:14px;"></div>
+            <div id="m-stats-display" style="font-size: 11px; color: #888; margin-bottom: 15px;"></div>
+            <input type="text" id="new-a" placeholder="NEW AVATAR URL">
+            <button class="main-btn" onclick="saveAva()">UPDATE AVATAR</button>
+            <button class="secondary-btn" onclick="closeProfile()">CLOSE</button>
         </div>
     </div>
 
     <script>
-        const DB_U = 'sys_users_v19';
-        const DB_M = 'sys_msgs_v19';
+        const DB_U = 'sys_users_v20';
+        const DB_M = 'sys_msgs_v20';
         let user = null;
-        let currentFilter = 'ALL';
+
+        const titles = [
+            {n: "Папа римский", p: 20}, {n: "Жуткий парень", p: 25},
+            {n: "Серийный убийца", p: 25}, {n: "Колдун от бога", p: 30},
+            {n: "Еба ты танцор", p: 30}, {n: "Нагибатор 3000", p: 35},
+            {n: "Хакер", p: 35}, {n: "Демон разума", p: 40}
+        ];
 
         const getLvl = (xp) => Math.floor((xp || 0) / 100) + 1;
 
-        function drawAva(n, a) {
-            if (a && a.startsWith('http')) {
-                return `<img src="${a}" onerror="this.src='';this.parentElement.innerText='${n[0]}'">`;
-            }
-            return n ? n[0].toUpperCase() : '?';
+        function showTab(tab) {
+            document.getElementById('tab-comm').style.display = tab === 'comm' ? 'block' : 'none';
+            document.getElementById('tab-shop').style.display = tab === 'shop' ? 'block' : 'none';
+            document.getElementById('btn-comm').classList.toggle('active', tab === 'comm');
+            document.getElementById('btn-shop').classList.toggle('active', tab === 'shop');
+            if(tab === 'shop') renderShop();
         }
 
         function login() {
@@ -147,139 +139,123 @@
             const p = document.getElementById('in-pass').value.trim();
             if(!n || !p) return alert("EMPTY!");
             let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            
-            if(!users[n]) {
-                users[n] = { pass: p, ava: '', xp: 0, karma: 0 };
-                localStorage.setItem(DB_U, JSON.stringify(users));
-            }
-            
+            if(!users[n]) users[n] = { pass: p, ava: '', xp: 0, karma: 0, title: '' };
             if(users[n].pass === p) {
                 user = { nick: n, ...users[n] };
                 localStorage.setItem('sys_session', JSON.stringify(user));
                 init();
-            } else alert("DENIED!");
+            } else alert("WRONG!");
         }
 
         function init() {
             document.getElementById('ui-auth').style.display = 'none';
             document.getElementById('ui-header').style.display = 'flex';
-            document.getElementById('ui-chat').style.display = 'block';
+            document.getElementById('ui-nav').style.display = 'flex';
+            showTab('comm');
             refreshUI();
             render();
         }
 
         function refreshUI() {
-            if(!user) return;
-            const lvl = getLvl(user.xp);
-            document.getElementById('ui-nick').innerText = user.nick;
-            document.getElementById('ui-lvl-header').innerText = "L" + lvl;
-            document.getElementById('ui-karma').innerHTML = `${user.karma || 0} 💀`;
+            document.getElementById('ui-nick').innerHTML = user.nick + (user.title ? `<span class="title-tag">[${user.title}]</span>` : '');
+            document.getElementById('ui-lvl-header').innerText = "L" + getLvl(user.xp);
+            document.getElementById('ui-karma').innerText = `${user.karma || 0} 💀`;
             document.getElementById('ui-ava').innerHTML = drawAva(user.nick, user.ava);
+        }
+
+        function drawAva(n, a) {
+            if (a && a.startsWith('http')) return `<img src="${a}" onerror="this.src='';this.parentElement.innerText='${n[0]}'">`;
+            return n ? n[0].toUpperCase() : '?';
         }
 
         function sendMsg() {
             const txt = document.getElementById('in-msg').value.trim();
-            const cat = document.getElementById('in-cat').value;
             if(!txt) return;
-
             let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
             let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            
             const oldLvl = getLvl(user.xp);
             user.xp += 10;
-            const newLvl = getLvl(user.xp);
-
-            // Награда за уровень
-            if(newLvl > oldLvl) {
-                user.karma = (user.karma || 0) + 5;
-                alert("LEVEL UP! +5 💀");
-            }
-
-            users[user.nick].xp = user.xp;
-            users[user.nick].karma = user.karma;
-            
-            msgs.push({ id: Date.now(), n: user.nick, a: user.ava, t: txt, xp: user.xp, cat: cat });
-            
+            if(getLvl(user.xp) > oldLvl) { user.karma += 5; alert("LEVEL UP! +5 💀"); }
+            users[user.nick] = user;
+            msgs.push({ id: Date.now(), n: user.nick, a: user.ava, t: txt, xp: user.xp, cat: document.getElementById('in-cat').value, title: user.title });
             localStorage.setItem(DB_M, JSON.stringify(msgs));
             localStorage.setItem(DB_U, JSON.stringify(users));
             localStorage.setItem('sys_session', JSON.stringify(user));
-
             document.getElementById('in-msg').value = '';
-            render();
-            refreshUI();
+            render(); refreshUI();
         }
 
-        function deleteMyMsg(id) {
-            if(!confirm("DELETE DATA?")) return;
-            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
-            msgs = msgs.filter(m => m.id !== id);
-            localStorage.setItem(DB_M, JSON.stringify(msgs));
-            render();
+        function renderShop() {
+            const list = document.getElementById('shop-list');
+            list.innerHTML = '';
+            titles.forEach(t => {
+                const canBuy = user.karma >= t.p && user.title !== t.n;
+                list.innerHTML += `
+                    <div class="shop-item">
+                        <div>
+                            <div class="shop-name">${t.n}</div>
+                            <div class="shop-price">${t.p} 💀</div>
+                        </div>
+                        <button class="secondary-btn" style="width:100px" 
+                            ${!canBuy ? 'disabled' : ''} onclick="buyTitle('${t.n}', ${t.p})">
+                            ${user.title === t.n ? 'OWNED' : 'BUY'}
+                        </button>
+                    </div>`;
+            });
         }
 
-        function setFilter(cat, btn) {
-            currentFilter = cat;
-            document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            render();
+        function buyTitle(name, price) {
+            if(!confirm(`КУПИТЬ ТИТУЛ "${name}" ЗА ${price} 💀?`)) return;
+            user.karma -= price;
+            user.title = name;
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            users[user.nick] = user;
+            localStorage.setItem(DB_U, JSON.stringify(users));
+            localStorage.setItem('sys_session', JSON.stringify(user));
+            alert("ТИТУЛ ПОЛУЧЕН!");
+            refreshUI(); renderShop();
         }
 
         function render() {
             const wall = document.getElementById('wall');
             let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
             wall.innerHTML = '';
-            if(currentFilter !== 'ALL') msgs = msgs.filter(m => m.cat === currentFilter);
             msgs.slice().reverse().forEach(m => {
-                const isWarn = (m.cat === '18+' || m.cat === 'ЖЕСТОКОСТЬ');
                 wall.innerHTML += `
                     <div class="post">
-                        ${m.n === user.nick ? `<div class="del-btn" onclick="deleteMyMsg(${m.id})">X</div>` : ''}
+                        ${m.n === user.nick ? `<div class="del-btn" onclick="deleteMsg(${m.id})">X</div>` : ''}
                         <div class="ava">${drawAva(m.n, m.a)}</div>
                         <div>
-                            <div class="p-nick">@${m.n} <span class="lvl-tag">L${getLvl(m.xp)}</span></div>
-                            <div style="margin: 3px 0;"><span class="cat-tag ${isWarn ? 'cat-warning' : ''}">[${m.cat}]</span></div>
-                            <div style="color:#fff; word-break:break-all; padding-right:15px;">${m.t}</div>
+                            <div class="p-nick">@${m.n} ${m.title ? `<span class="title-tag">[${m.title}]</span>` : ''} <span class="lvl-tag">L${getLvl(m.xp)}</span></div>
+                            <div style="margin: 3px 0;"><span class="cat-tag">[${m.cat}]</span></div>
+                            <div style="color:#fff; word-break:break-all;">${m.t}</div>
                         </div>
                     </div>`;
             });
         }
 
+        function deleteMsg(id) {
+            if(!confirm("DELETE?")) return;
+            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
+            localStorage.setItem(DB_M, JSON.stringify(msgs.filter(m => m.id !== id)));
+            render();
+        }
+
         function openProfile() {
             document.getElementById('m-profile').style.display = 'flex';
             document.getElementById('m-nick-display').innerText = user.nick;
-            document.getElementById('m-stats-display').innerHTML = `
-                XP: ${user.xp} (L${getLvl(user.xp)})<br>
-                KARMA: ${user.karma || 0} 💀
-            `;
+            document.getElementById('m-title-display').innerText = user.title ? `[${user.title}]` : 'НЕТ ТИТУЛА';
+            document.getElementById('m-stats-display').innerHTML = `XP: ${user.xp} (L${getLvl(user.xp)}) | KARMA: ${user.karma} 💀`;
             document.getElementById('m-ava-box').innerHTML = drawAva(user.nick, user.ava);
-            toggleEdit(false);
         }
 
-        function toggleEdit(on) {
-            document.getElementById('edit-form').style.display = on ? 'block' : 'none';
-            document.getElementById('m-view-btns').style.display = on ? 'none' : 'block';
-        }
-
-        function saveProfile() {
-            const newN = document.getElementById('new-n').value.trim();
-            const newA = document.getElementById('new-a').value.trim();
-            if(!newN) return;
+        function saveAva() {
+            user.ava = document.getElementById('new-a').value.trim();
             let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
-            if(newN !== user.nick && users[newN]) return alert("NICK TAKEN");
-            if(newN !== user.nick) {
-                users[newN] = users[user.nick];
-                delete users[user.nick];
-                msgs.forEach(m => { if(m.n === user.nick) m.n = newN; });
-                user.nick = newN;
-            }
-            user.ava = newA;
-            users[user.nick].ava = newA;
-            msgs.forEach(m => { if(m.n === user.nick) m.a = newA; });
+            users[user.nick] = user;
             localStorage.setItem(DB_U, JSON.stringify(users));
-            localStorage.setItem(DB_M, JSON.stringify(msgs));
             localStorage.setItem('sys_session', JSON.stringify(user));
-            closeProfile(); refreshUI(); render();
+            refreshUI(); closeProfile();
         }
 
         function closeProfile() { document.getElementById('m-profile').style.display = 'none'; }
@@ -287,12 +263,7 @@
 
         window.onload = () => {
             const saved = localStorage.getItem('sys_session');
-            if(saved) { 
-                user = JSON.parse(saved); 
-                // Миграция для старых аккаунтов (добавление кармы если ее нет)
-                if(user.karma === undefined) user.karma = 0;
-                init(); 
-            }
+            if(saved) { user = JSON.parse(saved); init(); }
         };
     </script>
 </body>
