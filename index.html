@@ -2,33 +2,21 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE END | SYSTEM V23</title>
+    <title>THE END | SYSTEM V26</title>
     <style>
-        body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 10px; overflow-x: hidden; }
+        body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 10px; overflow-x: hidden; transition: background 0.1s; }
+        .horror-title { text-align: center; color: #f00; font-size: 28px; text-transform: uppercase; letter-spacing: 5px; margin: 20px 0; text-shadow: 0 0 10px #f00; animation: flicker 3s infinite; font-weight: 900; }
+        @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.3; } }
         
-        .horror-title {
-            text-align: center; color: #f00; font-size: 28px; text-transform: uppercase;
-            letter-spacing: 5px; margin: 20px 0; text-shadow: 0 0 10px #f00;
-            animation: flicker 3s infinite; font-weight: 900;
-        }
-
-        @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
-            20%, 24%, 55% { opacity: 0.3; }
-        }
-
-        .nav-tabs { display: flex; max-width: 450px; margin: 0 auto; gap: 5px; }
-        .nav-btn { flex: 1; padding: 10px 5px; background: #111; border: 1px solid #f00; color: #f00; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 10px; }
+        .nav-tabs { display: flex; max-width: 500px; margin: 0 auto; gap: 5px; overflow-x: auto; scrollbar-width: none; }
+        .nav-btn { flex: 1; min-width: 85px; padding: 10px 2px; background: #111; border: 1px solid #f00; color: #f00; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 9px; }
         .nav-btn.active { background: #f00; color: #000; }
 
-        .box { border: 2px solid #f00; padding: 20px; background: #0a0a0a; max-width: 450px; margin: 10px auto; box-shadow: 0 0 15px #f00; }
+        .box { border: 2px solid #f00; padding: 20px; background: #0a0a0a; max-width: 450px; margin: 10px auto; box-shadow: 0 0 15px #f00; position: relative; }
         input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #f00; color: #ff0; box-sizing: border-box; outline: none; font-family: inherit; }
         
         .main-btn { width: 100%; padding: 15px; background: #f00; color: #000; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .main-btn:disabled { background: #300; color: #666; cursor: not-allowed; }
-        
         .secondary-btn { background: none; border: 1px solid #f00; color: #f00; padding: 8px; cursor: pointer; font-size: 10px; width: 100%; text-transform: uppercase; margin-top: 5px; }
 
         header { border-bottom: 2px solid #f00; display: none; justify-content: space-between; align-items: center; padding: 10px; background: #050505; position: sticky; top: 0; z-index: 10; }
@@ -36,19 +24,21 @@
         .lvl-tag { background: #f00; color: #000; padding: 2px 5px; font-size: 10px; font-weight: bold; }
         .title-tag { color: #ffd700; font-size: 10px; text-shadow: 0 0 5px #aa8800; margin-left: 5px; }
 
-        .code-err { color: #f00; font-size: 11px; text-align: center; margin-top: 10px; display: none; letter-spacing: 1px; }
-        .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px dashed #300; }
-        
-        .post { border-left: 3px solid #f00; padding: 10px; background: #111; margin-top: 15px; display: flex; gap: 12px; position: relative; }
+        .q-card { border: 1px solid #300; padding: 10px; margin-bottom: 10px; background: #050505; }
+        .q-name { color: #f00; font-size: 12px; font-weight: bold; }
+        .q-timer { font-size: 14px; color: #f00; font-weight: bold; text-align: center; margin-bottom: 10px; text-shadow: 0 0 5px #f00; }
+        .q-bar-bg { width: 100%; height: 6px; background: #200; margin-top: 5px; border: 1px solid #300; }
+        .q-bar-fill { height: 100%; background: #f00; transition: 0.5s; box-shadow: 0 0 5px #f00; }
+
+        .post { border-left: 3px solid #f00; padding: 10px; background: #111; margin-top: 15px; display: flex; gap: 12px; }
         .ava { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f00; background: #200; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .ava img { width: 100%; height: 100%; object-fit: cover; }
         
-        .cat-tag { font-size: 9px; padding: 2px 4px; border: 1px solid #555; margin-right: 5px; color: #aaa; }
-        .del-btn { position: absolute; top: 5px; right: 5px; color: #f00; cursor: pointer; font-size: 10px; border: 1px solid #f00; padding: 1px 5px; }
-
         .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:100; align-items:center; justify-content:center; }
         .m-content { background:#000; border:2px solid #f00; padding:25px; width:85%; max-width:320px; text-align:center; }
-        label { font-size: 10px; color: #f00; display: block; text-align: left; margin-top: 10px; }
+        
+        .flash { animation: flash-anim 0.2s; }
+        @keyframes flash-anim { 0% { background: #f00; } 100% { background: #000; } }
     </style>
 </head>
 <body>
@@ -70,7 +60,8 @@
     <div id="ui-nav" class="nav-tabs" style="display:none; margin-top:10px;">
         <button id="btn-comm" class="nav-btn active" onclick="showTab('comm')">COMMUNITY</button>
         <button id="btn-shop" class="nav-btn" onclick="showTab('shop')">MARKET</button>
-        <button id="btn-void" class="nav-btn" onclick="showTab('void')">VOID CODES</button>
+        <button id="btn-quests" class="nav-btn" onclick="showTab('quests')">QUESTS</button>
+        <button id="btn-void" class="nav-btn" onclick="showTab('void')">VOID</button>
     </div>
 
     <div id="ui-auth" class="box">
@@ -82,118 +73,172 @@
 
     <div id="tab-comm" class="box" style="display:none;">
         <textarea id="in-msg" placeholder="ВАШЕ СООБЩЕНИЕ..."></textarea>
-        <select id="in-cat">
-            <option value="ОБЩЕЕ">ВЫБРАТЬ КАТЕГОРИЮ</option>
-            <option value="ИГРЫ">ИГРЫ</option>
-            <option value="ИСТОРИИ">ИСТОРИИ</option>
-            <option value="ПОЛИТИКА">ПОЛИТИКА</option>
-            <option value="18+">18+</option>
-            <option value="ЖЕСТОКОСТЬ">ЖЕСТОКОСТЬ</option>
-        </select>
         <button class="main-btn" onclick="sendMsg()">TRANSMIT (+10 XP)</button>
         <div id="wall"></div>
     </div>
 
     <div id="tab-shop" class="box" style="display:none;">
-        <h3 style="color:#f00; text-align:center; margin-bottom: 20px;">TITLES MARKET</h3>
+        <h3 style="color:#f00; text-align:center;">TITLES MARKET</h3>
         <div id="shop-list"></div>
     </div>
 
+    <div id="tab-quests" class="box" style="display:none;">
+        <h3 style="color:#f00; text-align:center; margin-bottom: 5px;">DAILY QUESTS</h3>
+        <div id="timer-display" class="q-timer">00:00:00</div>
+        <div id="quest-list"></div>
+    </div>
+
     <div id="tab-void" class="box" style="display:none;">
-        <h3 style="color:#f00; text-align:center; margin-bottom: 20px;">ENTER THE VOID</h3>
-        <p style="font-size: 10px; color: #555; text-align: center;">ВВЕДИТЕ СЕКРЕТНЫЙ ШИФР ДЛЯ ПОЛУЧЕНИЯ НАГРАДЫ</p>
+        <h3 style="color:#f00; text-align:center;">VOID CODES</h3>
         <input type="text" id="in-code" placeholder="ENTER CODE...">
-        <div id="code-error" class="code-err">неправильно ввели код</div>
-        <button class="main-btn" onclick="useCode()">ACTIVATE CODE</button>
+        <div id="code-error" style="color:#f00; display:none; text-align:center; font-size:10px;">неправильно ввели код</div>
+        <button class="main-btn" onclick="useCode()">ACTIVATE</button>
     </div>
 
     <div id="m-profile" class="overlay">
         <div class="m-content">
-            <div id="m-ava-box" style="width:70px; height:70px; border-radius:50%; border:3px solid #f00; margin:0 auto 10px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:25px;"></div>
+            <div id="m-ava-box" class="ava" style="width:70px; height:70px; margin:0 auto 10px; font-size:25px;"></div>
             <h3 id="m-nick-display" style="color:#f00; margin:5px 0;"></h3>
-            
-            <label>MY TITLES:</label>
             <select id="m-title-select"></select>
-            <label>AVATAR URL:</label>
-            <input type="text" id="new-a" placeholder="http://...">
+            <input type="text" id="new-a" placeholder="AVATAR URL">
             <div id="m-stats-display" style="font-size: 11px; color: #888; margin: 10px 0;"></div>
-            <button class="main-btn" onclick="saveProfileChanges()">SAVE CHANGES</button>
+            <button class="main-btn" onclick="saveProfileChanges()">SAVE</button>
             <button class="secondary-btn" onclick="closeProfile()">CLOSE</button>
         </div>
     </div>
 
     <script>
-        const DB_U = 'sys_users_v23';
-        const DB_M = 'sys_msgs_v23';
+        const DB_U = 'sys_users_v26';
+        const DB_M = 'sys_msgs_v26';
         let user = null;
 
+        const allQuests = [
+            { id: 'm1', n: 'Разведка', desc: 'Написать 5 сообщений', target: 5, type: 'msgs', rew: 10 },
+            { id: 'm2', n: 'Активный шум', desc: 'Написать 12 сообщений', target: 12, type: 'msgs', rew: 18 },
+            { id: 'l1', n: 'Эволюция', desc: 'Поднять 1 уровень', target: 1, type: 'lvls', rew: 15 },
+            { id: 'k1', n: 'Сборщик черепов', desc: 'Отправить 8 сообщений', target: 8, type: 'msgs', rew: 12 },
+            { id: 'r1', n: 'Взлом системы', desc: 'Достичь 7 уровня', target: 7, type: 'reach', rew: 20 },
+            { id: 'm3', n: 'Теневой шепот', desc: 'Написать 20 сообщений', target: 20, type: 'msgs', rew: 25 }
+        ];
+
         const titlesData = [
-            {n: "Папа римский", p: 20}, {n: "Жуткий парень", p: 25},
-            {n: "Серийный убийца", p: 25}, {n: "Колдун от бога", p: 30},
-            {n: "Еба ты танцор", p: 30}, {n: "Нагибатор 3000", p: 35},
-            {n: "Хакер", p: 35}, {n: "Демон разума", p: 40}
+            {n: "Папа римский", p: 20}, {n: "Серийный убийца", p: 25},
+            {n: "Колдун от бога", p: 30}, {n: "Нагибатор 3000", p: 35},
+            {n: "Демон разума", p: 40}
         ];
 
         const getLvl = (xp) => Math.floor((xp || 0) / 100) + 1;
 
-        function showTab(tab) {
-            document.getElementById('tab-comm').style.display = tab === 'comm' ? 'block' : 'none';
-            document.getElementById('tab-shop').style.display = tab === 'shop' ? 'block' : 'none';
-            document.getElementById('tab-void').style.display = tab === 'void' ? 'block' : 'none';
-            
-            document.getElementById('btn-comm').classList.toggle('active', tab === 'comm');
-            document.getElementById('btn-shop').classList.toggle('active', tab === 'shop');
-            document.getElementById('btn-void').classList.toggle('active', tab === 'void');
-            
-            if(tab === 'shop') renderShop();
-            if(tab === 'void') document.getElementById('code-error').style.display = 'none';
+        function updateTimer() {
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const diff = tomorrow - now;
+            const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+            const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+            const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+            const display = document.getElementById('timer-display');
+            if(display) display.innerText = `${h}:${m}:${s}`;
+            if(h === "00" && m === "00" && s === "00") { checkDailyReset(); renderQuests(); }
         }
 
-        function useCode() {
-            const codeInput = document.getElementById('in-code');
-            const code = codeInput.value.trim();
-            const err = document.getElementById('code-error');
-            err.style.display = 'none';
-
-            if(!user.usedCodes) user.usedCodes = [];
-            if(user.usedCodes.includes(code)) return alert("ЭТОТ ШИФР УЖЕ ИСПОЛЬЗОВАН!");
-
-            let reward = null;
-            if(code === "Cartoon cat") reward = { k: 20, t: "Мультяшный персонаж" };
-            else if(code === "Where are my balls!!!") reward = { k: 10, t: "Шеф-повар" };
-
-            if(reward) {
-                user.karma += reward.k;
-                if(!user.inventory.includes(reward.t)) user.inventory.push(reward.t);
-                user.usedCodes.push(code);
+        function checkDailyReset() {
+            const today = new Date().toLocaleDateString();
+            if (user.qDate !== today) {
+                user.qDate = today;
+                user.dailyQuests = [...allQuests].sort(() => 0.5 - Math.random()).slice(0, 3);
+                user.qStats = { msgs: 0, startLvl: getLvl(user.xp) };
+                user.claimed = [];
                 updateAllData();
-                alert(`ДОСТУП РАЗРЕШЕН: +${reward.k} 💀 | ТИТУЛ: ${reward.t}`);
-                codeInput.value = '';
-                refreshUI();
-            } else {
-                err.style.display = 'block';
             }
+        }
+
+        function showTab(tab) {
+            ['comm', 'shop', 'quests', 'void'].forEach(t => document.getElementById('tab-'+t).style.display = (tab === t ? 'block' : 'none'));
+            ['comm', 'shop', 'quests', 'void'].forEach(t => document.getElementById('btn-'+t).classList.toggle('active', tab === t));
+            if(tab === 'shop') renderShop();
+            if(tab === 'quests') { checkDailyReset(); renderQuests(); }
         }
 
         function login() {
             const n = document.getElementById('in-nick').value.trim();
             const p = document.getElementById('in-pass').value.trim();
-            if(!n || !p) return alert("EMPTY!");
+            if(!n || !p) return;
             let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            if(!users[n]) users[n] = { pass: p, ava: '', xp: 0, karma: 0, title: '', inventory: [], usedCodes: [] };
+            if(!users[n]) users[n] = { pass: p, ava: '', xp: 0, karma: 0, title: '', inventory: [], usedCodes: [], qDate: '', dailyQuests: [], qStats: {msgs:0, startLvl:1}, claimed: [] };
             if(users[n].pass === p) {
-                user = { nick: n, ...users[n] };
-                if(!user.inventory) user.inventory = [];
+                user = users[n]; user.nick = n;
+                checkDailyReset();
                 localStorage.setItem('sys_session', JSON.stringify(user));
                 init();
-            } else alert("WRONG!");
+            } else alert("INVALID ACCESS");
         }
 
         function init() {
             document.getElementById('ui-auth').style.display = 'none';
             document.getElementById('ui-header').style.display = 'flex';
             document.getElementById('ui-nav').style.display = 'flex';
+            setInterval(updateTimer, 1000);
             showTab('comm'); refreshUI(); render();
+        }
+
+        function sendMsg() {
+            const txt = document.getElementById('in-msg').value.trim();
+            if(!txt) return;
+            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
+            const oldLvl = getLvl(user.xp);
+            user.xp += 10;
+            user.qStats.msgs++;
+            if(getLvl(user.xp) > oldLvl) user.karma += 5;
+            updateAllData();
+            msgs.push({ id: Date.now(), n: user.nick, a: user.ava, t: txt, xp: user.xp, title: user.title });
+            localStorage.setItem(DB_M, JSON.stringify(msgs));
+            document.getElementById('in-msg').value = '';
+            render(); refreshUI();
+        }
+
+        function renderQuests() {
+            const list = document.getElementById('quest-list');
+            list.innerHTML = '';
+            user.dailyQuests.forEach(q => {
+                let prog = (q.type === 'msgs') ? user.qStats.msgs : (q.type === 'lvls') ? Math.max(0, getLvl(user.xp) - user.qStats.startLvl) : getLvl(user.xp);
+                const done = prog >= q.target;
+                const claimed = user.claimed.includes(q.id);
+                const perc = Math.min(100, (prog/q.target)*100);
+                list.innerHTML += `<div class="q-card" style="border-color: ${claimed?'#111':'#300'}">
+                    <div class="q-name" style="color:${claimed?'#444':'#f00'}">${q.n} ${claimed?'✅':''}</div>
+                    <div style="font-size:9px; color:#555;">${q.desc} (${prog}/${q.target})</div>
+                    <div class="q-bar-bg"><div class="q-bar-fill" style="width:${perc}%; background:${claimed?'#222':'#f00'}"></div></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                        <span style="color:#ffd700; font-size:10px;">Награда: ${q.rew} 💀</span>
+                        ${done && !claimed ? `<button class="secondary-btn" style="width:70px;margin:0" onclick="claimQ('${q.id}', ${q.rew})">CLAIM</button>` : ''}
+                    </div></div>`;
+            });
+        }
+
+        function claimQ(id, rew) {
+            user.claimed.push(id); user.karma += rew;
+            updateAllData(); refreshUI(); renderQuests();
+        }
+
+        function useCode() {
+            const code = document.getElementById('in-code').value.trim();
+            const err = document.getElementById('code-error');
+            err.style.display = 'none';
+            if(user.usedCodes.includes(code)) return;
+            let r = (code === "Cartoon cat") ? { k: 20, t: "Мультяшный персонаж" } : (code === "Where are my balls!!!") ? { k: 10, t: "Шеф-повар" } : null;
+            if(r) {
+                document.body.classList.add('flash'); setTimeout(()=>document.body.classList.remove('flash'), 200);
+                user.karma += r.k; if(!user.inventory.includes(r.t)) user.inventory.push(r.t);
+                user.usedCodes.push(code); updateAllData(); refreshUI();
+                document.getElementById('in-code').value = '';
+            } else err.style.display = 'block';
+        }
+
+        function updateAllData() {
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            users[user.nick] = user;
+            localStorage.setItem(DB_U, JSON.stringify(users));
+            localStorage.setItem('sys_session', JSON.stringify(user));
         }
 
         function refreshUI() {
@@ -208,47 +253,19 @@
             return n ? n[0].toUpperCase() : '?';
         }
 
-        function updateAllData() {
-            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
-            users[user.nick] = user;
-            msgs.forEach(m => { if(m.n === user.nick) { m.title = user.title; m.a = user.ava; } });
-            localStorage.setItem(DB_U, JSON.stringify(users));
-            localStorage.setItem(DB_M, JSON.stringify(msgs));
-            localStorage.setItem('sys_session', JSON.stringify(user));
-        }
-
-        function sendMsg() {
-            const txt = document.getElementById('in-msg').value.trim();
-            if(!txt) return;
-            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
-            const oldLvl = getLvl(user.xp);
-            user.xp += 10;
-            if(getLvl(user.xp) > oldLvl) { user.karma += 5; alert("LEVEL UP! +5 💀"); }
-            updateAllData();
-            msgs.push({ id: Date.now(), n: user.nick, a: user.ava, t: txt, xp: user.xp, cat: document.getElementById('in-cat').value, title: user.title });
-            localStorage.setItem(DB_M, JSON.stringify(msgs));
-            document.getElementById('in-msg').value = '';
-            render(); refreshUI();
-        }
-
         function renderShop() {
-            const list = document.getElementById('shop-list');
-            list.innerHTML = '';
+            const list = document.getElementById('shop-list'); list.innerHTML = '';
             titlesData.forEach(t => {
                 const has = user.inventory.includes(t.n);
-                list.innerHTML += `<div class="shop-item">
-                    <div><div style="color:${has?'#555':'#ffd700'};font-weight:bold;">${t.n}</div><div style="color:#fff;font-size:12px;">${t.p} 💀</div></div>
-                    <button class="secondary-btn" style="width:100px" ${(!has && user.karma < t.p) ? 'disabled' : ''} onclick="buyTitle('${t.n}', ${t.p})">
-                    ${has ? 'OWNED' : 'BUY'}</button></div>`;
+                list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #200;">
+                    <div><div style="color:${has?'#555':'#ffd700'};font-weight:bold; font-size:12px;">${t.n}</div><div style="color:#fff;font-size:10px;">${t.p} 💀</div></div>
+                    <button class="secondary-btn" style="width:70px" ${(!has && user.karma < t.p) ? 'disabled' : ''} onclick="buyTitle('${t.n}', ${t.p})">${has ? 'OK' : 'BUY'}</button></div>`;
             });
         }
 
         function buyTitle(name, price) {
-            if(user.inventory.includes(name)) return;
-            if(!confirm(`BUY "${name}"?`)) return;
-            user.karma -= price;
-            user.inventory.push(name);
+            if(user.karma < price) return;
+            user.karma -= price; user.inventory.push(name);
             updateAllData(); refreshUI(); renderShop();
         }
 
@@ -258,21 +275,12 @@
             wall.innerHTML = '';
             msgs.slice().reverse().forEach(m => {
                 wall.innerHTML += `<div class="post">
-                    ${m.n === user.nick ? `<div class="del-btn" onclick="deleteMsg(${m.id})">X</div>` : ''}
                     <div class="ava">${drawAva(m.n, m.a)}</div>
-                    <div>
-                        <div class="p-nick">@${m.n} ${m.title ? `<span class="title-tag">[${m.title}]</span>` : ''} <span class="lvl-tag">L${getLvl(m.xp)}</span></div>
-                        <div style="margin: 3px 0;"><span class="cat-tag">[${m.cat}]</span></div>
-                        <div style="color:#fff; word-break:break-all;">${m.t}</div>
+                    <div style="width:100%">
+                        <div style="font-size:11px;">@${m.n} ${m.title ? `<span class="title-tag">[${m.title}]</span>` : ''} <span class="lvl-tag">L${getLvl(m.xp)}</span></div>
+                        <div style="color:#fff; word-break:break-all; margin-top:4px; font-size:13px;">${m.t}</div>
                     </div></div>`;
             });
-        }
-
-        function deleteMsg(id) {
-            if(!confirm("DELETE?")) return;
-            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
-            localStorage.setItem(DB_M, JSON.stringify(msgs.filter(m => m.id !== id)));
-            render();
         }
 
         function openProfile() {
@@ -281,12 +289,7 @@
             document.getElementById('new-a').value = user.ava || '';
             const sel = document.getElementById('m-title-select');
             sel.innerHTML = '<option value="">NONE</option>';
-            user.inventory.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t; opt.innerText = t;
-                if(t === user.title) opt.selected = true;
-                sel.appendChild(opt);
-            });
+            user.inventory.forEach(t => { sel.innerHTML += `<option value="${t}" ${t===user.title?'selected':''}>${t}</option>`; });
             document.getElementById('m-stats-display').innerHTML = `XP: ${user.xp} (L${getLvl(user.xp)}) | KARMA: ${user.karma} 💀`;
             document.getElementById('m-ava-box').innerHTML = drawAva(user.nick, user.ava);
         }
@@ -294,8 +297,7 @@
         function saveProfileChanges() {
             user.title = document.getElementById('m-title-select').value;
             user.ava = document.getElementById('new-a').value.trim();
-            updateAllData();
-            refreshUI(); render(); closeProfile();
+            updateAllData(); refreshUI(); render(); closeProfile();
         }
 
         function closeProfile() { document.getElementById('m-profile').style.display = 'none'; }
