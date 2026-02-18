@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE END | SYSTEM V34</title>
+    <title>THE END | SYSTEM V35</title>
     <style>
         body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 10px; overflow-x: hidden; }
         .horror-title { text-align: center; color: #f00; font-size: 28px; text-transform: uppercase; letter-spacing: 5px; margin: 20px 0; text-shadow: 0 0 10px #f00; animation: flicker 3s infinite; font-weight: 900; }
@@ -16,18 +16,15 @@
         .box { border: 2px solid #f00; padding: 20px; background: #0a0a0a; max-width: 450px; margin: 10px auto; box-shadow: 0 0 15px #f00; position: relative; }
         input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #f00; color: #ff0; box-sizing: border-box; outline: none; font-family: inherit; }
         
-        .search-input { border-color: #500; font-size: 12px; margin-bottom: 20px; border-style: dashed; }
-        .search-input:focus { border-color: #f00; border-style: solid; }
-
         .main-btn { width: 100%; padding: 15px; background: #f00; color: #000; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .secondary-btn { background: none; border: 1px solid #f00; color: #f00; padding: 8px; cursor: pointer; font-size: 10px; width: 100%; text-transform: uppercase; margin-top: 5px; }
 
         header { border-bottom: 2px solid #f00; display: none; justify-content: space-between; align-items: center; padding: 10px; background: #050505; position: sticky; top: 0; z-index: 10; }
         .user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .lvl-tag { background: #f00; color: #000; padding: 2px 5px; font-size: 10px; font-weight: bold; }
-        
+
         .item-card { border-left: 3px solid #f00; padding: 10px; background: #111; margin-top: 15px; display: flex; gap: 12px; }
-        .post-article { border: 1px solid #300; background: #050505; padding: 15px; margin-bottom: 20px; transition: 0.3s; }
+        .post-article { border: 1px solid #300; background: #050505; padding: 15px; margin-bottom: 20px; }
         .post-header { color: #f00; font-weight: bold; text-transform: uppercase; font-size: 16px; margin-bottom: 5px; border-bottom: 1px solid #300; padding-bottom: 5px; }
         
         .ava { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f00; background: #200; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold; color: #f00; }
@@ -35,6 +32,10 @@
         
         .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100; align-items:center; justify-content:center; }
         .m-content { background:#000; border:2px solid #f00; padding:25px; width:85%; max-width:320px; text-align:center; }
+
+        .shop-nav { display: flex; gap: 5px; margin-bottom: 15px; }
+        .shop-nav-btn { flex: 1; padding: 5px; background: #000; border: 1px solid #500; color: #500; cursor: pointer; font-size: 10px; text-transform: uppercase; }
+        .shop-nav-btn.active { border-color: #f00; color: #f00; }
     </style>
 </head>
 <body>
@@ -74,8 +75,23 @@
     </div>
 
     <div id="tab-posts" class="box" style="display:none;">
-        <input type="text" id="post-search" class="search-input" placeholder="SEARCH BY TITLE..." oninput="renderPosts()">
+        <input type="text" id="post-search" placeholder="SEARCH BY TITLE..." oninput="renderPosts()">
         <div id="post-wall"></div>
+    </div>
+
+    <div id="tab-shop" class="box" style="display:none;">
+        <div class="shop-nav">
+            <button id="s-btn-t" class="shop-nav-btn active" onclick="renderShop('titles')">TITLES</button>
+            <button id="s-btn-a" class="shop-nav-btn" onclick="renderShop('avatars')">AVATARS</button>
+        </div>
+        <div id="shop-list"></div>
+    </div>
+
+    <div id="tab-void" class="box" style="display:none;">
+        <h3 style="color:#f00; text-align:center;">VOID CODES</h3>
+        <input type="text" id="in-code" placeholder="ENTER CODE...">
+        <div id="code-error" style="color:#f00; display:none; text-align:center; font-size:10px; margin-bottom:5px;">INVALID ACCESS CODE</div>
+        <button class="main-btn" onclick="useCode()">ACTIVATE</button>
     </div>
 
     <div id="m-profile" class="overlay">
@@ -83,8 +99,8 @@
             <div id="m-ava-box" class="ava" style="width:70px; height:70px; margin:0 auto 10px;"></div>
             <h3 id="m-nick-display" style="color:#f00;"></h3>
             <button class="main-btn" onclick="openPostEditor()">➕ CREATE POST</button>
-            <div style="margin: 15px 0; border-top: 1px solid #300; padding-top: 10px;">
-                <label style="font-size:10px; color:#f00; display:block; text-align:left;">AVATAR:</label>
+            <div style="margin-top:15px; border-top:1px solid #222; padding-top:10px; text-align:left;">
+                <label style="font-size:10px; color:#f00;">SELECT AVATAR:</label>
                 <select id="m-ava-select" onchange="previewAva()"></select>
             </div>
             <button class="main-btn" onclick="saveProfileChanges()">SAVE</button>
@@ -103,10 +119,15 @@
     </div>
 
     <script>
-        const DB_U = 'sys_users_v34';
-        const DB_M = 'sys_msgs_v34';
-        const DB_P = 'sys_posts_v34';
+        const DB_U = 'sys_users_v35';
+        const DB_M = 'sys_msgs_v35';
+        const DB_P = 'sys_posts_v35';
         let user = null;
+        let currentShopTab = 'titles';
+
+        const titlesData = [
+            {n: "The Pope", p: 20}, {n: "Serial Killer", p: 25}, {n: "Mind Demon", p: 40}
+        ];
 
         const avatarsData = [
             {n: "Red Skull", p: 25, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC95YVuU8ngSwiQ5hILkn0ZcEzhLOBcRjRfBiP-3OnGg&s=10"},
@@ -115,17 +136,19 @@
 
         const getLvl = (xp) => Math.floor((xp || 0) / 100) + 1;
 
+        // --- AUTH ---
         function login() {
             const n = document.getElementById('in-nick').value.trim();
             const p = document.getElementById('in-pass').value.trim();
             if(!n || !p) return;
             let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            if(!users[n]) users[n] = { pass: p, ava: '', xp: 0, karma: 0, inventory: [], avaInventory: [] };
+            if(!users[n]) users[n] = { pass: p, ava: '', xp: 0, karma: 0, inventory: [], avaInventory: [], usedCodes: [] };
             if(users[n].pass === p) {
                 user = users[n]; user.nick = n;
+                if(!user.avaInventory) user.avaInventory = [];
                 localStorage.setItem('sys_session', JSON.stringify(user));
                 init();
-            } else alert("WRONG PASSWORD");
+            } else alert("DENIED");
         }
 
         function init() {
@@ -135,45 +158,90 @@
             showTab('comm'); refreshUI();
         }
 
+        // --- NAVIGATION & TABS ---
         function showTab(tab) {
             ['comm', 'posts', 'shop', 'void'].forEach(t => {
-                const el = document.getElementById('tab-'+t);
-                if(el) el.style.display = (tab === t ? 'block' : 'none');
-                const btn = document.getElementById('btn-'+t);
-                if(btn) btn.classList.toggle('active', tab === t);
+                document.getElementById('tab-'+t).style.display = (tab === t ? 'block' : 'none');
+                document.getElementById('btn-'+t).classList.toggle('active', tab === t);
             });
             if(tab === 'posts') renderPosts();
             if(tab === 'comm') renderChat();
+            if(tab === 'shop') renderShop(currentShopTab);
         }
 
-        // --- SEARCHABLE POST SYSTEM ---
+        // --- MARKET LOGIC ---
+        function renderShop(type) {
+            currentShopTab = type;
+            document.getElementById('s-btn-t').classList.toggle('active', type === 'titles');
+            document.getElementById('s-btn-a').classList.toggle('active', type === 'avatars');
+            const list = document.getElementById('shop-list');
+            list.innerHTML = '';
+            const data = type === 'titles' ? titlesData : avatarsData;
+            const inv = type === 'titles' ? (user.inventory || []) : (user.avaInventory || []);
+            
+            data.forEach(item => {
+                const has = inv.includes(item.n);
+                list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #200;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        ${type === 'avatars' ? `<img src="${item.url}" style="width:35px; height:35px; border:1px solid #f00;">` : ''}
+                        <div><div style="color:${has?'#555':'#ffd700'}; font-weight:bold; font-size:12px;">${item.n}</div><div style="color:#fff; font-size:10px;">${item.p} 💀</div></div>
+                    </div>
+                    <button class="secondary-btn" style="width:70px; margin:0;" ${(!has && user.karma < item.p) ? 'disabled' : ''} onclick="buyItem('${item.n}', ${item.p}, '${type}')">${has ? 'OWNED' : 'BUY'}</button>
+                </div>`;
+            });
+        }
+
+        function buyItem(name, price, type) {
+            if(type === 'titles') {
+                if(!user.inventory.includes(name) && user.karma >= price) {
+                    user.karma -= price; user.inventory.push(name);
+                }
+            } else {
+                if(!user.avaInventory.includes(name) && user.karma >= price) {
+                    user.karma -= price; user.avaInventory.push(name);
+                }
+            }
+            updateAllData(); refreshUI(); renderShop(type);
+        }
+
+        // --- VOID CODES ---
+        function useCode() {
+            const code = document.getElementById('in-code').value.trim().toLowerCase();
+            const err = document.getElementById('code-error');
+            err.style.display = 'none';
+            if(!user.usedCodes) user.usedCodes = [];
+            if(user.usedCodes.includes(code)) { alert("ALREADY USED"); return; }
+
+            if(code === "cartoon cat") {
+                if(!user.avaInventory.includes("Cartoon Cat")) user.avaInventory.push("Cartoon Cat");
+                user.karma += 20;
+                user.usedCodes.push(code);
+                updateAllData(); refreshUI();
+                alert("VOID DATA RECEIVED: CARTOON CAT UNLOCKED");
+                document.getElementById('in-code').value = '';
+            } else {
+                err.style.display = 'block';
+            }
+        }
+
+        // --- POSTS ---
         function renderPosts() {
             const wall = document.getElementById('post-wall');
-            const searchQuery = document.getElementById('post-search').value.toLowerCase().trim();
+            const search = document.getElementById('post-search').value.toLowerCase();
             let posts = JSON.parse(localStorage.getItem(DB_P) || '[]');
             let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            
-            // Фильтрация по заголовку
-            const filteredPosts = posts.filter(p => p.title.toLowerCase().includes(searchQuery));
-            
+            const filtered = posts.filter(p => p.title.toLowerCase().includes(search));
             wall.innerHTML = '';
-            
-            if (filteredPosts.length === 0) {
-                wall.innerHTML = `<div style="color:#500; text-align:center; margin-top:20px; font-size:12px;">NOTHING FOUND IN THE VOID</div>`;
-                return;
-            }
-
-            filteredPosts.slice().reverse().forEach(p => {
+            filtered.slice().reverse().forEach(p => {
                 const authorData = users[p.author] || {};
-                wall.innerHTML += `
-                    <div class="post-article">
-                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-                            <div class="ava" style="width:25px; height:25px; font-size:10px;">${drawAva(p.author, authorData.ava)}</div>
-                            <div style="font-size:9px; color:#666;">@${p.author} • ${p.date}</div>
-                        </div>
-                        <div class="post-header">${p.title}</div>
-                        <div style="color:#bbb; font-size:13px; white-space: pre-wrap;">${p.text}</div>
-                    </div>`;
+                wall.innerHTML += `<div class="post-article">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                        <div class="ava" style="width:25px; height:25px; font-size:10px;">${drawAva(p.author, authorData.ava)}</div>
+                        <div style="font-size:9px; color:#666;">@${p.author} • ${p.date}</div>
+                    </div>
+                    <div class="post-header">${p.title}</div>
+                    <div style="color:#bbb; font-size:13px; white-space: pre-wrap;">${p.text}</div>
+                </div>`;
             });
         }
 
@@ -181,27 +249,14 @@
             const title = document.getElementById('post-title').value.trim();
             const text = document.getElementById('post-text').value.trim();
             if(!title || !text) return;
-
             let posts = JSON.parse(localStorage.getItem(DB_P) || '[]');
-            posts.push({
-                id: Date.now(),
-                author: user.nick,
-                title: title,
-                text: text,
-                date: new Date().toLocaleDateString()
-            });
+            posts.push({ id: Date.now(), author: user.nick, title: title, text: text, date: new Date().toLocaleDateString() });
             localStorage.setItem(DB_P, JSON.stringify(posts));
-            
-            user.xp += 20;
-            updateAllData();
-            
-            document.getElementById('post-title').value = '';
-            document.getElementById('post-text').value = '';
-            closePostEditor();
-            showTab('posts');
+            user.xp += 20; updateAllData();
+            closePostEditor(); showTab('posts');
         }
 
-        // --- CORE FUNCTIONS ---
+        // --- CORE ---
         function openPostEditor() { closeProfile(); document.getElementById('m-post-editor').style.display = 'flex'; }
         function closePostEditor() { document.getElementById('m-post-editor').style.display = 'none'; }
         function openProfile() {
