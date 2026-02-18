@@ -20,26 +20,27 @@
         
         .back-btn { color: #f00; text-decoration: none; font-weight: bold; border: 1px solid #f00; padding: 5px 15px; text-transform: uppercase; font-size: 12px; }
         .title-preview { font-weight: bold; color: #ffd700; text-shadow: 0 0 5px #aa8800; }
+        img { object-fit: cover; background: #111; }
     </style>
 </head>
 <body>
 
     <div class="market-header">
-        <a href="index.html" class="back-btn">⬅ BACK TO SYSTEM</a>
+        <a href="index.html" class="back-btn">⬅ НАЗАД В СИСТЕМУ</a>
         <div id="wallet" style="color:#f00; font-weight:bold; font-size: 18px;">0 💀</div>
     </div>
 
     <div class="box">
         <div class="shop-tabs">
-            <button id="tab-a" class="tab-btn active" onclick="switchTab('avatars')">AVATARS</button>
-            <button id="tab-t" class="tab-btn" onclick="switchTab('titles')">TITLES</button>
+            <button id="tab-a" class="tab-btn active" onclick="switchTab('avatars')">АВАТАРЫ</button>
+            <button id="tab-t" class="tab-btn" onclick="switchTab('titles')">ТИТУЛЫ</button>
         </div>
 
         <div id="shop-list"></div>
     </div>
 
     <script>
-        const DB_U = 'sys_users_v35'; // Должен совпадать с index.html
+        const DB_U = 'sys_users_v35'; 
         let user = JSON.parse(localStorage.getItem('sys_session'));
         let currentTab = 'avatars';
 
@@ -47,7 +48,7 @@
             avatars: [
                 {n: "Red Skull", p: 25, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC95YVuU8ngSwiQ5hILkn0ZcEzhLOBcRjRfBiP-3OnGg&s=10"},
                 {n: "Cartoon Cat", p: 35, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaTs4cQbDFBP_I4gExo0qQ_lVFq9UVpkmLEyD4w6XllA&s=10"},
-                {n: "Void Watcher", p: 50, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6-o3F7B0mB8Lp4E7uN6p6u8o9fGjV9v1L6g&s"}
+                {n: "Void Watcher", p: 50, url: "https://images.cults3d.com/FpLndx40oAirTek8cU1qBqJPWlk=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/22935284/illustration-file/5c7bb7ff-eb23-4bc9-842b-b9ae45e10e9e/VoidWatcher_Cover.jpg"}
             ],
             titles: [
                 {n: "The Pope", p: 20},
@@ -67,7 +68,7 @@
 
         function renderShop() {
             if(!user) {
-                document.body.innerHTML = "<h1 style='color:red; text-align:center;'>ACCESS DENIED. PLEASE LOGIN.</h1>";
+                document.body.innerHTML = "<h1 style='color:red; text-align:center;'>ДОСТУП ЗАПРЕЩЕН. ВОЙДИТЕ В СИСТЕМУ.</h1>";
                 return;
             }
             
@@ -86,18 +87,18 @@
                     <div class="item">
                         <div class="item-info">
                             ${currentTab === 'avatars' 
-                                ? `<img src="${item.url}" style="width:45px; height:45px; border:1px solid #f00; border-radius:5px;">`
+                                ? `<img src="${item.url}" style="width:50px; height:50px; border:1px solid #f00;" onerror="this.src='https://via.placeholder.com/50/200?text=?'">`
                                 : `<span class="title-preview">[${item.n}]</span>`
                             }
                             <div>
                                 <div style="color:#fff; font-size:14px; font-weight:bold;">${item.n}</div>
-                                <div style="color:#f00; font-size:11px;">COST: ${item.p} 💀</div>
+                                <div style="color:#f00; font-size:11px;">ЦЕНА: ${item.p} 💀</div>
                             </div>
                         </div>
                         <button class="buy-btn" 
                             ${isOwned || !canAfford ? 'disabled' : ''} 
                             onclick="buyItem('${item.n}', ${item.p})">
-                            ${isOwned ? 'OWNED' : 'BUY'}
+                            ${isOwned ? 'КУПЛЕНО' : 'КУПИТЬ'}
                         </button>
                     </div>
                 `;
@@ -106,7 +107,6 @@
 
         function buyItem(name, price) {
             if (user.karma < price) return;
-
             user.karma -= price;
             
             if (currentTab === 'avatars') {
@@ -115,17 +115,15 @@
                 if (!user.inventory.includes(name)) user.inventory.push(name);
             }
 
-            // Обновляем БД
             let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
             users[user.nick] = user;
             localStorage.setItem(DB_U, JSON.stringify(users));
             localStorage.setItem('sys_session', JSON.stringify(user));
 
             renderShop();
-            alert(`SUCCESSFULLY PURCHASED: ${name}`);
+            alert(`ВЫ ПРИОБРЕЛИ: ${name}`);
         }
 
-        // Запуск при загрузке
         renderShop();
     </script>
 </body>
