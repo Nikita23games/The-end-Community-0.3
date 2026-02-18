@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE END | SYSTEM V28</title>
+    <title>THE END | SYSTEM V29</title>
     <style>
         body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 10px; overflow-x: hidden; }
         .horror-title { text-align: center; color: #f00; font-size: 28px; text-transform: uppercase; letter-spacing: 5px; margin: 20px 0; text-shadow: 0 0 10px #f00; animation: flicker 3s infinite; font-weight: 900; }
@@ -24,10 +24,6 @@
         .lvl-tag { background: #f00; color: #000; padding: 2px 5px; font-size: 10px; font-weight: bold; }
         .title-tag { color: #ffd700; font-size: 10px; text-shadow: 0 0 5px #aa8800; margin-left: 5px; }
 
-        .q-card { border: 1px solid #300; padding: 10px; margin-bottom: 10px; background: #050505; }
-        .q-bar-bg { width: 100%; height: 6px; background: #200; margin-top: 5px; }
-        .q-bar-fill { height: 100%; background: #f00; transition: 0.5s; }
-
         .post { border-left: 3px solid #f00; padding: 10px; background: #111; margin-top: 15px; display: flex; gap: 12px; }
         .ava { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f00; background: #200; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold; color: #f00; }
         .ava img { width: 100%; height: 100%; object-fit: cover; }
@@ -36,7 +32,7 @@
         .m-content { background:#000; border:2px solid #f00; padding:25px; width:85%; max-width:320px; text-align:center; }
 
         .shop-nav { display: flex; gap: 5px; margin-bottom: 15px; }
-        .shop-nav-btn { flex: 1; padding: 5px; background: #000; border: 1px solid #500; color: #500; cursor: pointer; font-size: 10px; }
+        .shop-nav-btn { flex: 1; padding: 5px; background: #000; border: 1px solid #500; color: #500; cursor: pointer; font-size: 10px; text-transform: uppercase; }
         .shop-nav-btn.active { border-color: #f00; color: #f00; }
     </style>
 </head>
@@ -71,8 +67,8 @@
     </div>
 
     <div id="tab-comm" class="box" style="display:none;">
-        <textarea id="in-msg" placeholder="ВАШЕ СООБЩЕНИЕ..."></textarea>
-        <button class="main-btn" onclick="sendMsg()">TRANSMIT (+10 XP)</button>
+        <textarea id="in-msg" placeholder="TRANSMIT DATA..."></textarea>
+        <button class="main-btn" onclick="sendMsg()">SEND (+10 XP)</button>
         <div id="wall"></div>
     </div>
 
@@ -93,7 +89,7 @@
     <div id="tab-void" class="box" style="display:none;">
         <h3 style="color:#f00; text-align:center;">VOID CODES</h3>
         <input type="text" id="in-code" placeholder="ENTER CODE...">
-        <div id="code-error" style="color:#f00; display:none; text-align:center; font-size:10px;">неправильно ввели код</div>
+        <div id="code-error" style="color:#f00; display:none; text-align:center; font-size:10px;">INVALID ACCESS CODE</div>
         <button class="main-btn" onclick="useCode()">ACTIVATE</button>
     </div>
 
@@ -115,25 +111,31 @@
     </div>
 
     <script>
-        const DB_U = 'sys_users_v28';
-        const DB_M = 'sys_msgs_v28';
+        const DB_U = 'sys_users_v29';
+        const DB_M = 'sys_msgs_v29';
         let user = null;
         let currentShopTab = 'titles';
 
+        // Translated Titles
         const titlesData = [
-            {n: "Папа римский", p: 20}, {n: "Серийный убийца", p: 25},
-            {n: "Колдун от бога", p: 30}, {n: "Нагибатор 3000", p: 35},
-            {n: "Демон разума", p: 40}
+            {n: "The Pope", p: 20}, 
+            {n: "Creepy Guy", p: 25}, 
+            {n: "Serial Killer", p: 25},
+            {n: "Divine Sorcerer", p: 30}, 
+            {n: "Hell Dancer", p: 30}, 
+            {n: "Dominator 3000", p: 35},
+            {n: "System Hacker", p: 35}, 
+            {n: "Mind Demon", p: 40}
         ];
 
         const avatarsData = [
-            {n: "Cartoon cat", p: 35, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaTs4cQbDFBP_I4gExo0qQ_lVFq9UVpkmLEyD4w6XllA&s=10"}
+            {n: "Cartoon Cat", p: 35, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaTs4cQbDFBP_I4gExo0qQ_lVFq9UVpkmLEyD4w6XllA&s=10"}
         ];
 
         const allQuests = [
-            { id: 'm1', n: 'Разведка', desc: 'Написать 5 сообщений', target: 5, type: 'msgs', rew: 10 },
-            { id: 'l1', n: 'Эволюция', desc: 'Поднять 1 уровень', target: 1, type: 'lvls', rew: 15 },
-            { id: 'k1', n: 'Сборщик', desc: 'Написать 8 сообщений', target: 8, type: 'msgs', rew: 12 }
+            { id: 'm1', n: 'Scout', desc: 'Send 5 messages', target: 5, type: 'msgs', rew: 10 },
+            { id: 'l1', n: 'Evolution', desc: 'Level up 1 time', target: 1, type: 'lvls', rew: 15 },
+            { id: 'k1', n: 'Collector', desc: 'Send 8 messages', target: 8, type: 'msgs', rew: 12 }
         ];
 
         const getLvl = (xp) => Math.floor((xp || 0) / 100) + 1;
@@ -179,7 +181,7 @@
                 checkDailyReset();
                 localStorage.setItem('sys_session', JSON.stringify(user));
                 init();
-            } else alert("ERROR");
+            } else alert("ACCESS DENIED");
         }
 
         function init() {
@@ -225,7 +227,7 @@
                         </div>
                     </div>
                     <button class="secondary-btn" style="width:70px; margin:0;" ${(!has && user.karma < item.p) ? 'disabled' : ''} 
-                    onclick="buyItem('${item.n}', ${item.p}, '${type}')">${has ? 'OK' : 'BUY'}</button>
+                    onclick="buyItem('${item.n}', ${item.p}, '${type}')">${has ? 'OWNED' : 'BUY'}</button>
                 </div>`;
             });
         }
@@ -292,16 +294,19 @@
             
             let r = null;
             if(code === "Cartoon cat") {
-                // Если код на аву
-                const aName = "Cartoon cat";
+                const aName = "Cartoon Cat";
                 if(!user.avaInventory.includes(aName)) user.avaInventory.push(aName);
                 r = { k: 20 };
+            } else if(code === "Chef") {
+                const tName = "Hell Dancer";
+                if(!user.inventory.includes(tName)) user.inventory.push(tName);
+                r = { k: 10 };
             }
             
             if(r) {
                 user.karma += r.k; user.usedCodes.push(code); updateAllData(); refreshUI();
                 document.getElementById('in-code').value = '';
-                alert("CODE ACTIVATED!");
+                alert("VOID DATA RECEIVED");
             } else err.style.display = 'block';
         }
 
@@ -311,10 +316,10 @@
                 let prog = (q.type === 'msgs') ? user.qStats.msgs : Math.max(0, getLvl(user.xp) - user.qStats.startLvl);
                 const done = prog >= q.target;
                 const claimed = user.claimed.includes(q.id);
-                list.innerHTML += `<div class="q-card">
-                    <div class="q-name" style="color:${claimed?'#444':'#f00'}">${q.n} ${claimed?'✅':''}</div>
+                list.innerHTML += `<div class="q-card" style="border: 1px solid #300; padding: 10px; margin-bottom: 10px; background: #050505;">
+                    <div style="color:${claimed?'#444':'#f00'}; font-weight:bold; font-size:12px;">${q.n} ${claimed?'✅':''}</div>
                     <div style="font-size:9px; color:#555;">${q.desc} (${prog}/${q.target})</div>
-                    <div class="q-bar-bg"><div class="q-bar-fill" style="width: ${Math.min(100, (prog/q.target)*100)}%; background:${claimed?'#222':'#f00'}"></div></div>
+                    <div style="width:100%; height:6px; background:#200; margin-top:5px;"><div style="width: ${Math.min(100, (prog/q.target)*100)}%; height:100%; background:${claimed?'#222':'#f00'}; transition:0.5s;"></div></div>
                     ${done && !claimed ? `<button class="secondary-btn" onclick="claimQ('${q.id}', ${q.rew})">CLAIM ${q.rew} 💀</button>` : ''}
                 </div>`;
             });
