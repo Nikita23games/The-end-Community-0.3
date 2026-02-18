@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE END | SYSTEM V26</title>
+    <title>THE END | SYSTEM V28</title>
     <style>
-        body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 10px; overflow-x: hidden; transition: background 0.1s; }
+        body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 10px; overflow-x: hidden; }
         .horror-title { text-align: center; color: #f00; font-size: 28px; text-transform: uppercase; letter-spacing: 5px; margin: 20px 0; text-shadow: 0 0 10px #f00; animation: flicker 3s infinite; font-weight: 900; }
         @keyframes flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.3; } }
         
@@ -25,20 +25,19 @@
         .title-tag { color: #ffd700; font-size: 10px; text-shadow: 0 0 5px #aa8800; margin-left: 5px; }
 
         .q-card { border: 1px solid #300; padding: 10px; margin-bottom: 10px; background: #050505; }
-        .q-name { color: #f00; font-size: 12px; font-weight: bold; }
-        .q-timer { font-size: 14px; color: #f00; font-weight: bold; text-align: center; margin-bottom: 10px; text-shadow: 0 0 5px #f00; }
-        .q-bar-bg { width: 100%; height: 6px; background: #200; margin-top: 5px; border: 1px solid #300; }
-        .q-bar-fill { height: 100%; background: #f00; transition: 0.5s; box-shadow: 0 0 5px #f00; }
+        .q-bar-bg { width: 100%; height: 6px; background: #200; margin-top: 5px; }
+        .q-bar-fill { height: 100%; background: #f00; transition: 0.5s; }
 
         .post { border-left: 3px solid #f00; padding: 10px; background: #111; margin-top: 15px; display: flex; gap: 12px; }
-        .ava { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f00; background: #200; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ava { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f00; background: #200; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold; color: #f00; }
         .ava img { width: 100%; height: 100%; object-fit: cover; }
         
         .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:100; align-items:center; justify-content:center; }
         .m-content { background:#000; border:2px solid #f00; padding:25px; width:85%; max-width:320px; text-align:center; }
-        
-        .flash { animation: flash-anim 0.2s; }
-        @keyframes flash-anim { 0% { background: #f00; } 100% { background: #000; } }
+
+        .shop-nav { display: flex; gap: 5px; margin-bottom: 15px; }
+        .shop-nav-btn { flex: 1; padding: 5px; background: #000; border: 1px solid #500; color: #500; cursor: pointer; font-size: 10px; }
+        .shop-nav-btn.active { border-color: #f00; color: #f00; }
     </style>
 </head>
 <body>
@@ -78,13 +77,16 @@
     </div>
 
     <div id="tab-shop" class="box" style="display:none;">
-        <h3 style="color:#f00; text-align:center;">TITLES MARKET</h3>
+        <div class="shop-nav">
+            <button id="s-btn-t" class="shop-nav-btn active" onclick="renderShop('titles')">TITLES</button>
+            <button id="s-btn-a" class="shop-nav-btn" onclick="renderShop('avatars')">AVATARS</button>
+        </div>
         <div id="shop-list"></div>
     </div>
 
     <div id="tab-quests" class="box" style="display:none;">
         <h3 style="color:#f00; text-align:center; margin-bottom: 5px;">DAILY QUESTS</h3>
-        <div id="timer-display" class="q-timer">00:00:00</div>
+        <div id="timer-display" style="color:#f00; text-align:center; font-weight:bold; margin-bottom:10px;">00:00:00</div>
         <div id="quest-list"></div>
     </div>
 
@@ -99,8 +101,13 @@
         <div class="m-content">
             <div id="m-ava-box" class="ava" style="width:70px; height:70px; margin:0 auto 10px; font-size:25px;"></div>
             <h3 id="m-nick-display" style="color:#f00; margin:5px 0;"></h3>
+            
+            <label style="font-size:10px; color:#f00; display:block; text-align:left;">SELECT TITLE:</label>
             <select id="m-title-select"></select>
-            <input type="text" id="new-a" placeholder="AVATAR URL">
+            
+            <label style="font-size:10px; color:#f00; display:block; text-align:left; margin-top:10px;">SELECT AVATAR:</label>
+            <select id="m-ava-select" onchange="previewAva()"></select>
+
             <div id="m-stats-display" style="font-size: 11px; color: #888; margin: 10px 0;"></div>
             <button class="main-btn" onclick="saveProfileChanges()">SAVE</button>
             <button class="secondary-btn" onclick="closeProfile()">CLOSE</button>
@@ -108,23 +115,25 @@
     </div>
 
     <script>
-        const DB_U = 'sys_users_v26';
-        const DB_M = 'sys_msgs_v26';
+        const DB_U = 'sys_users_v28';
+        const DB_M = 'sys_msgs_v28';
         let user = null;
-
-        const allQuests = [
-            { id: 'm1', n: 'Разведка', desc: 'Написать 5 сообщений', target: 5, type: 'msgs', rew: 10 },
-            { id: 'm2', n: 'Активный шум', desc: 'Написать 12 сообщений', target: 12, type: 'msgs', rew: 18 },
-            { id: 'l1', n: 'Эволюция', desc: 'Поднять 1 уровень', target: 1, type: 'lvls', rew: 15 },
-            { id: 'k1', n: 'Сборщик черепов', desc: 'Отправить 8 сообщений', target: 8, type: 'msgs', rew: 12 },
-            { id: 'r1', n: 'Взлом системы', desc: 'Достичь 7 уровня', target: 7, type: 'reach', rew: 20 },
-            { id: 'm3', n: 'Теневой шепот', desc: 'Написать 20 сообщений', target: 20, type: 'msgs', rew: 25 }
-        ];
+        let currentShopTab = 'titles';
 
         const titlesData = [
             {n: "Папа римский", p: 20}, {n: "Серийный убийца", p: 25},
             {n: "Колдун от бога", p: 30}, {n: "Нагибатор 3000", p: 35},
             {n: "Демон разума", p: 40}
+        ];
+
+        const avatarsData = [
+            {n: "Cartoon cat", p: 35, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaTs4cQbDFBP_I4gExo0qQ_lVFq9UVpkmLEyD4w6XllA&s=10"}
+        ];
+
+        const allQuests = [
+            { id: 'm1', n: 'Разведка', desc: 'Написать 5 сообщений', target: 5, type: 'msgs', rew: 10 },
+            { id: 'l1', n: 'Эволюция', desc: 'Поднять 1 уровень', target: 1, type: 'lvls', rew: 15 },
+            { id: 'k1', n: 'Сборщик', desc: 'Написать 8 сообщений', target: 8, type: 'msgs', rew: 12 }
         ];
 
         const getLvl = (xp) => Math.floor((xp || 0) / 100) + 1;
@@ -136,9 +145,7 @@
             const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
             const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
             const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-            const display = document.getElementById('timer-display');
-            if(display) display.innerText = `${h}:${m}:${s}`;
-            if(h === "00" && m === "00" && s === "00") { checkDailyReset(); renderQuests(); }
+            if(document.getElementById('timer-display')) document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
         }
 
         function checkDailyReset() {
@@ -155,8 +162,9 @@
         function showTab(tab) {
             ['comm', 'shop', 'quests', 'void'].forEach(t => document.getElementById('tab-'+t).style.display = (tab === t ? 'block' : 'none'));
             ['comm', 'shop', 'quests', 'void'].forEach(t => document.getElementById('btn-'+t).classList.toggle('active', tab === t));
-            if(tab === 'shop') renderShop();
+            if(tab === 'shop') renderShop(currentShopTab);
             if(tab === 'quests') { checkDailyReset(); renderQuests(); }
+            if(tab === 'comm') render();
         }
 
         function login() {
@@ -164,13 +172,14 @@
             const p = document.getElementById('in-pass').value.trim();
             if(!n || !p) return;
             let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            if(!users[n]) users[n] = { pass: p, ava: '', xp: 0, karma: 0, title: '', inventory: [], usedCodes: [], qDate: '', dailyQuests: [], qStats: {msgs:0, startLvl:1}, claimed: [] };
+            if(!users[n]) users[n] = { pass: p, ava: '', xp: 0, karma: 0, title: '', inventory: [], avaInventory: [], usedCodes: [], qDate: '', dailyQuests: [], qStats: {msgs:0, startLvl:1}, claimed: [] };
             if(users[n].pass === p) {
                 user = users[n]; user.nick = n;
+                if(!user.avaInventory) user.avaInventory = [];
                 checkDailyReset();
                 localStorage.setItem('sys_session', JSON.stringify(user));
                 init();
-            } else alert("INVALID ACCESS");
+            } else alert("ERROR");
         }
 
         function init() {
@@ -178,7 +187,7 @@
             document.getElementById('ui-header').style.display = 'flex';
             document.getElementById('ui-nav').style.display = 'flex';
             setInterval(updateTimer, 1000);
-            showTab('comm'); refreshUI(); render();
+            showTab('comm'); refreshUI();
         }
 
         function sendMsg() {
@@ -186,98 +195,60 @@
             if(!txt) return;
             let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
             const oldLvl = getLvl(user.xp);
-            user.xp += 10;
-            user.qStats.msgs++;
+            user.xp += 10; user.qStats.msgs++;
             if(getLvl(user.xp) > oldLvl) user.karma += 5;
             updateAllData();
-            msgs.push({ id: Date.now(), n: user.nick, a: user.ava, t: txt, xp: user.xp, title: user.title });
+            msgs.push({ id: Date.now(), n: user.nick, t: txt, xp: user.xp });
             localStorage.setItem(DB_M, JSON.stringify(msgs));
             document.getElementById('in-msg').value = '';
             render(); refreshUI();
         }
 
-        function renderQuests() {
-            const list = document.getElementById('quest-list');
+        function renderShop(type) {
+            currentShopTab = type;
+            document.getElementById('s-btn-t').classList.toggle('active', type === 'titles');
+            document.getElementById('s-btn-a').classList.toggle('active', type === 'avatars');
+            
+            const list = document.getElementById('shop-list');
             list.innerHTML = '';
-            user.dailyQuests.forEach(q => {
-                let prog = (q.type === 'msgs') ? user.qStats.msgs : (q.type === 'lvls') ? Math.max(0, getLvl(user.xp) - user.qStats.startLvl) : getLvl(user.xp);
-                const done = prog >= q.target;
-                const claimed = user.claimed.includes(q.id);
-                const perc = Math.min(100, (prog/q.target)*100);
-                list.innerHTML += `<div class="q-card" style="border-color: ${claimed?'#111':'#300'}">
-                    <div class="q-name" style="color:${claimed?'#444':'#f00'}">${q.n} ${claimed?'✅':''}</div>
-                    <div style="font-size:9px; color:#555;">${q.desc} (${prog}/${q.target})</div>
-                    <div class="q-bar-bg"><div class="q-bar-fill" style="width:${perc}%; background:${claimed?'#222':'#f00'}"></div></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-                        <span style="color:#ffd700; font-size:10px;">Награда: ${q.rew} 💀</span>
-                        ${done && !claimed ? `<button class="secondary-btn" style="width:70px;margin:0" onclick="claimQ('${q.id}', ${q.rew})">CLAIM</button>` : ''}
-                    </div></div>`;
+            const data = type === 'titles' ? titlesData : avatarsData;
+            const inv = type === 'titles' ? user.inventory : user.avaInventory;
+
+            data.forEach(item => {
+                const has = inv.includes(item.n);
+                list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #200;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        ${type === 'avatars' ? `<img src="${item.url}" style="width:30px; height:30px; border:1px solid #f00;">` : ''}
+                        <div>
+                            <div style="color:${has?'#555':'#ffd700'}; font-weight:bold; font-size:12px;">${item.n}</div>
+                            <div style="color:#fff; font-size:10px;">${item.p} 💀</div>
+                        </div>
+                    </div>
+                    <button class="secondary-btn" style="width:70px; margin:0;" ${(!has && user.karma < item.p) ? 'disabled' : ''} 
+                    onclick="buyItem('${item.n}', ${item.p}, '${type}')">${has ? 'OK' : 'BUY'}</button>
+                </div>`;
             });
         }
 
-        function claimQ(id, rew) {
-            user.claimed.push(id); user.karma += rew;
-            updateAllData(); refreshUI(); renderQuests();
-        }
-
-        function useCode() {
-            const code = document.getElementById('in-code').value.trim();
-            const err = document.getElementById('code-error');
-            err.style.display = 'none';
-            if(user.usedCodes.includes(code)) return;
-            let r = (code === "Cartoon cat") ? { k: 20, t: "Мультяшный персонаж" } : (code === "Where are my balls!!!") ? { k: 10, t: "Шеф-повар" } : null;
-            if(r) {
-                document.body.classList.add('flash'); setTimeout(()=>document.body.classList.remove('flash'), 200);
-                user.karma += r.k; if(!user.inventory.includes(r.t)) user.inventory.push(r.t);
-                user.usedCodes.push(code); updateAllData(); refreshUI();
-                document.getElementById('in-code').value = '';
-            } else err.style.display = 'block';
-        }
-
-        function updateAllData() {
-            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            users[user.nick] = user;
-            localStorage.setItem(DB_U, JSON.stringify(users));
-            localStorage.setItem('sys_session', JSON.stringify(user));
-        }
-
-        function refreshUI() {
-            document.getElementById('ui-nick').innerHTML = user.nick + (user.title ? `<span class="title-tag">[${user.title}]</span>` : '');
-            document.getElementById('ui-lvl-header').innerText = "L" + getLvl(user.xp);
-            document.getElementById('ui-karma').innerText = `${user.karma || 0} 💀`;
-            document.getElementById('ui-ava').innerHTML = drawAva(user.nick, user.ava);
-        }
-
-        function drawAva(n, a) {
-            if (a && a.startsWith('http')) return `<img src="${a}" onerror="this.src='';this.parentElement.innerText='${n[0]}'">`;
-            return n ? n[0].toUpperCase() : '?';
-        }
-
-        function renderShop() {
-            const list = document.getElementById('shop-list'); list.innerHTML = '';
-            titlesData.forEach(t => {
-                const has = user.inventory.includes(t.n);
-                list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #200;">
-                    <div><div style="color:${has?'#555':'#ffd700'};font-weight:bold; font-size:12px;">${t.n}</div><div style="color:#fff;font-size:10px;">${t.p} 💀</div></div>
-                    <button class="secondary-btn" style="width:70px" ${(!has && user.karma < t.p) ? 'disabled' : ''} onclick="buyTitle('${t.n}', ${t.p})">${has ? 'OK' : 'BUY'}</button></div>`;
-            });
-        }
-
-        function buyTitle(name, price) {
-            if(user.karma < price) return;
-            user.karma -= price; user.inventory.push(name);
-            updateAllData(); refreshUI(); renderShop();
+        function buyItem(name, price, type) {
+            const inv = type === 'titles' ? user.inventory : user.avaInventory;
+            if(inv.includes(name) || user.karma < price) return;
+            user.karma -= price;
+            inv.push(name);
+            updateAllData(); refreshUI(); renderShop(type);
         }
 
         function render() {
             const wall = document.getElementById('wall');
             let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
             wall.innerHTML = '';
             msgs.slice().reverse().forEach(m => {
+                const author = users[m.n] || { ava: '', title: '', xp: m.xp };
                 wall.innerHTML += `<div class="post">
-                    <div class="ava">${drawAva(m.n, m.a)}</div>
+                    <div class="ava">${drawAva(m.n, author.ava)}</div>
                     <div style="width:100%">
-                        <div style="font-size:11px;">@${m.n} ${m.title ? `<span class="title-tag">[${m.title}]</span>` : ''} <span class="lvl-tag">L${getLvl(m.xp)}</span></div>
+                        <div style="font-size:11px;">@${m.n} ${author.title ? `<span class="title-tag">[${author.title}]</span>` : ''} <span class="lvl-tag">L${getLvl(m.xp)}</span></div>
                         <div style="color:#fff; word-break:break-all; margin-top:4px; font-size:13px;">${m.t}</div>
                     </div></div>`;
             });
@@ -286,27 +257,88 @@
         function openProfile() {
             document.getElementById('m-profile').style.display = 'flex';
             document.getElementById('m-nick-display').innerText = user.nick;
-            document.getElementById('new-a').value = user.ava || '';
-            const sel = document.getElementById('m-title-select');
-            sel.innerHTML = '<option value="">NONE</option>';
-            user.inventory.forEach(t => { sel.innerHTML += `<option value="${t}" ${t===user.title?'selected':''}>${t}</option>`; });
+            
+            const tSel = document.getElementById('m-title-select');
+            tSel.innerHTML = '<option value="">NONE</option>';
+            user.inventory.forEach(t => tSel.innerHTML += `<option value="${t}" ${t===user.title?'selected':''}>${t}</option>`);
+
+            const aSel = document.getElementById('m-ava-select');
+            aSel.innerHTML = '<option value="">DEFAULT (LETTER)</option>';
+            user.avaInventory.forEach(aName => {
+                const aData = avatarsData.find(d => d.n === aName);
+                if(aData) aSel.innerHTML += `<option value="${aData.url}" ${user.ava===aData.url?'selected':''}>${aName}</option>`;
+            });
+
             document.getElementById('m-stats-display').innerHTML = `XP: ${user.xp} (L${getLvl(user.xp)}) | KARMA: ${user.karma} 💀`;
-            document.getElementById('m-ava-box').innerHTML = drawAva(user.nick, user.ava);
+            previewAva();
+        }
+
+        function previewAva() {
+            const url = document.getElementById('m-ava-select').value;
+            document.getElementById('m-ava-box').innerHTML = drawAva(user.nick, url);
         }
 
         function saveProfileChanges() {
             user.title = document.getElementById('m-title-select').value;
-            user.ava = document.getElementById('new-a').value.trim();
+            user.ava = document.getElementById('m-ava-select').value;
             updateAllData(); refreshUI(); render(); closeProfile();
         }
 
+        function useCode() {
+            const code = document.getElementById('in-code').value.trim();
+            const err = document.getElementById('code-error');
+            err.style.display = 'none';
+            if(user.usedCodes.includes(code)) return;
+            
+            let r = null;
+            if(code === "Cartoon cat") {
+                // Если код на аву
+                const aName = "Cartoon cat";
+                if(!user.avaInventory.includes(aName)) user.avaInventory.push(aName);
+                r = { k: 20 };
+            }
+            
+            if(r) {
+                user.karma += r.k; user.usedCodes.push(code); updateAllData(); refreshUI();
+                document.getElementById('in-code').value = '';
+                alert("CODE ACTIVATED!");
+            } else err.style.display = 'block';
+        }
+
+        function renderQuests() {
+            const list = document.getElementById('quest-list'); list.innerHTML = '';
+            user.dailyQuests.forEach(q => {
+                let prog = (q.type === 'msgs') ? user.qStats.msgs : Math.max(0, getLvl(user.xp) - user.qStats.startLvl);
+                const done = prog >= q.target;
+                const claimed = user.claimed.includes(q.id);
+                list.innerHTML += `<div class="q-card">
+                    <div class="q-name" style="color:${claimed?'#444':'#f00'}">${q.n} ${claimed?'✅':''}</div>
+                    <div style="font-size:9px; color:#555;">${q.desc} (${prog}/${q.target})</div>
+                    <div class="q-bar-bg"><div class="q-bar-fill" style="width: ${Math.min(100, (prog/q.target)*100)}%; background:${claimed?'#222':'#f00'}"></div></div>
+                    ${done && !claimed ? `<button class="secondary-btn" onclick="claimQ('${q.id}', ${q.rew})">CLAIM ${q.rew} 💀</button>` : ''}
+                </div>`;
+            });
+        }
+
+        function claimQ(id, rew) { user.claimed.push(id); user.karma += rew; updateAllData(); refreshUI(); renderQuests(); }
+        function updateAllData() {
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            users[user.nick] = user;
+            localStorage.setItem(DB_U, JSON.stringify(users));
+            localStorage.setItem('sys_session', JSON.stringify(user));
+        }
+        function refreshUI() {
+            document.getElementById('ui-nick').innerHTML = user.nick + (user.title ? `<span class="title-tag">[${user.title}]</span>` : '');
+            document.getElementById('ui-lvl-header').innerText = "L" + getLvl(user.xp);
+            document.getElementById('ui-karma').innerText = `${user.karma || 0} 💀`;
+            document.getElementById('ui-ava').innerHTML = drawAva(user.nick, user.ava);
+        }
+        function drawAva(n, a) {
+            return (a && a.startsWith('http')) ? `<img src="${a}" onerror="this.src='';this.parentElement.innerText='${n[0]}'">` : n[0].toUpperCase();
+        }
         function closeProfile() { document.getElementById('m-profile').style.display = 'none'; }
         function logout() { localStorage.removeItem('sys_session'); location.reload(); }
-
-        window.onload = () => {
-            const saved = localStorage.getItem('sys_session');
-            if(saved) { user = JSON.parse(saved); init(); }
-        };
+        window.onload = () => { if(localStorage.getItem('sys_session')) { user = JSON.parse(localStorage.getItem('sys_session')); init(); } };
     </script>
 </body>
 </html>
