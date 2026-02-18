@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE END | MARKET</title>
+    <style>
+        body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 20px; }
+        .market-header { border-bottom: 2px solid #f00; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .box { border: 2px solid #f00; background: #0a0a0a; max-width: 500px; margin: 20px auto; padding: 20px; }
+        .item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #200; padding: 10px 0; }
+        .buy-btn { background: #f00; color: #000; border: none; padding: 5px 15px; cursor: pointer; font-weight: bold; }
+        .buy-btn:disabled { background: #333; color: #555; }
+        .back-btn { color: #f00; text-decoration: none; font-weight: bold; border: 1px solid #f00; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="market-header">
+        <a href="index.html" class="back-btn">⬅ BACK TO SYSTEM</a>
+        <div id="wallet" style="color:#f00; font-weight:bold;">KARMA: 0 💀</div>
+    </div>
+
+    <div class="box">
+        <h2 style="text-align:center; color:#f00;">AVATAR MARKET</h2>
+        <div id="shop-list"></div>
+    </div>
+
+    <script>
+        const DB_U = 'sys_users_v35';
+        let user = JSON.parse(localStorage.getItem('sys_session'));
+
+        const avatars = [
+            {n: "Red Skull", p: 25, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC95YVuU8ngSwiQ5hILkn0ZcEzhLOBcRjRfBiP-3OnGg&s=10"},
+            {n: "Cartoon Cat", p: 35, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaTs4cQbDFBP_I4gExo0qQ_lVFq9UVpkmLEyD4w6XllA&s=10"}
+        ];
+
+        function renderShop() {
+            if(!user) return document.body.innerHTML = "<h1>ACCESS DENIED. LOGIN FIRST.</h1>";
+            
+            document.getElementById('wallet').innerText = `KARMA: ${user.karma} 💀`;
+            const list = document.getElementById('shop-list');
+            list.innerHTML = avatars.map(item => {
+                const has = user.avaInventory.includes(item.n);
+                return `
+                    <div class="item">
+                        <img src="${item.url}" style="width:40px; height:40px; border:1px solid #f00;">
+                        <div style="flex:1; margin-left:15px;">
+                            <div style="color:#ffd700;">${item.n}</div>
+                            <div style="font-size:10px;">Price: ${item.p} 💀</div>
+                        </div>
+                        <button class="buy-btn" ${has || user.karma < item.p ? 'disabled' : ''} onclick="buy('${item.n}', ${item.p}, '${item.url}')">
+                            ${has ? 'OWNED' : 'BUY'}
+                        </button>
+                    </div>`;
+            }).join('');
+        }
+
+        function buy(name, price, url) {
+            if(user.karma >= price) {
+                user.karma -= price;
+                user.avaInventory.push(name);
+                // Сохраняем в глобальную базу
+                let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+                users[user.nick] = user;
+                localStorage.setItem(DB_U, JSON.stringify(users));
+                localStorage.setItem('sys_session', JSON.stringify(user));
+                renderShop();
+                alert("PURCHASED!");
+            }
+        }
+
+        renderShop();
+    </script>
+</body>
+</html>
