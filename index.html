@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE END | COMMUNITY</title>
+    <title>THE END | SYSTEM V40</title>
     <style>
         body { background: #000; color: #ff0; font-family: 'Courier New', monospace; margin: 0; padding: 10px; }
         .horror-title { text-align: center; color: #f00; font-size: 28px; text-transform: uppercase; letter-spacing: 5px; margin: 20px 0; text-shadow: 0 0 10px #f00; }
         .nav-tabs { display: flex; max-width: 600px; margin: 0 auto; gap: 5px; overflow-x: auto; }
-        .nav-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #f00; color: #f00; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 10px; text-decoration: none; text-align: center; white-space: nowrap; }
+        .nav-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #f00; color: #f00; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 10px; text-decoration: none; text-align: center; }
         .nav-btn.active { background: #f00; color: #000; }
         .box { border: 2px solid #f00; padding: 20px; background: #0a0a0a; max-width: 450px; margin: 10px auto; box-shadow: 0 0 15px #f00; }
         input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #f00; color: #ff0; box-sizing: border-box; font-family: inherit; outline: none; }
@@ -17,12 +17,16 @@
         header { border-bottom: 2px solid #f00; display: none; justify-content: space-between; align-items: center; padding: 10px; background: #050505; position: sticky; top: 0; z-index: 10; }
         .user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .lvl-tag { background: #f00; color: #000; padding: 2px 5px; font-size: 10px; font-weight: bold; }
-        .post-article { border: 1px solid #300; background: #050505; padding: 15px; margin-bottom: 20px; text-align: left; }
-        .post-header { color: #f00; font-weight: bold; text-transform: uppercase; font-size: 16px; margin-bottom: 5px; border-bottom: 1px solid #300; }
-        .ava { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f00; background: #200; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold; color: #f00; }
+        .post-article { border: 1px solid #300; background: #050505; padding: 15px; margin-bottom: 20px; }
+        .post-header { color: #f00; font-weight: bold; text-transform: uppercase; font-size: 16px; border-bottom: 1px solid #300; }
+        .ava { width: 45px; height: 45px; border-radius: 50%; border: 2px solid #f00; background: #200; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #f00; }
         .ava img { width: 100%; height: 100%; object-fit: cover; }
         .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100; align-items:center; justify-content:center; }
         .m-content { background:#000; border:2px solid #f00; padding:25px; width:85%; max-width:320px; text-align:center; }
+        .post-footer { display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid #222; padding-top: 10px; }
+        .vote-btn { background: #111; border: 1px solid #333; color: #555; padding: 5px 10px; cursor: pointer; }
+        .vote-btn.active-up { color: #0f0; border-color: #0f0; }
+        .vote-btn.active-down { color: #f00; border-color: #f00; }
     </style>
 </head>
 <body>
@@ -53,6 +57,23 @@
         <input type="text" id="in-nick" placeholder="NICKNAME">
         <input type="password" id="in-pass" placeholder="PASSWORD">
         <button class="main-btn" onclick="login()">ENTER SYSTEM</button>
+        <button class="secondary-btn" style="border:none; text-decoration:underline;" onclick="openRecovery()">FORGOT PASSWORD?</button>
+    </div>
+
+    <div id="m-recovery" class="overlay">
+        <div class="m-content">
+            <h3 style="color:#f00;">RECOVERY MODE</h3>
+            <input type="text" id="rec-nick" placeholder="ENTER NICKNAME">
+            <div id="rec-step2" style="display:none; border:1px solid #300; padding:10px; margin:10px 0; background:#050505;">
+                <p style="font-size:10px; color:#f00; margin:0;">SECURITY CODE:</p>
+                <div id="generated-code" style="font-size:24px; color:#fff; font-weight:bold; letter-spacing:5px; margin:10px 0;">000000</div>
+                <input type="text" id="rec-verify" placeholder="RE-ENTER CODE">
+            </div>
+            <div id="rec-result" style="display:none; color:#0f0; border:1px dashed #0f0; padding:10px; margin:10px 0; font-weight:bold;"></div>
+            <button id="btn-get-code" class="main-btn" onclick="generateRecoveryStep()">GET CODE</button>
+            <button id="btn-show-pass" class="main-btn" style="display:none;" onclick="finalRecover()">SHOW PASSWORD</button>
+            <button class="secondary-btn" onclick="closeRecovery()">BACK</button>
+        </div>
     </div>
 
     <div id="tab-comm" class="box" style="display:none;">
@@ -62,7 +83,7 @@
     </div>
 
     <div id="tab-posts" class="box" style="display:none;">
-        <input type="text" id="post-search" placeholder="SEARCH BY TITLE..." oninput="renderPosts()">
+        <input type="text" id="post-search" placeholder="SEARCH POSTS..." oninput="renderPosts()">
         <div id="post-wall"></div>
     </div>
 
@@ -75,7 +96,7 @@
     <div id="m-profile" class="overlay">
         <div class="m-content">
             <div id="m-ava-box" class="ava" style="width:70px; height:70px; margin:0 auto 10px;"></div>
-            <h3 id="m-nick-display" style="color:#f00; margin:0;"></h3>
+            <h3 id="m-nick-display" style="color:#f00;"></h3>
             <button class="main-btn" onclick="openPostEditor()">➕ ADD POST</button>
             <div style="text-align:left; margin-top:10px;">
                 <label style="font-size:10px; color:#f00;">AVATAR:</label>
@@ -103,6 +124,7 @@
         const DB_M = 'sys_msgs_v35';
         const DB_P = 'sys_posts_v35';
         let user = null;
+        let currentSessionCode = "";
 
         const allAvas = [
             {n: "Red Skull", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC95YVuU8ngSwiQ5hILkn0ZcEzhLOBcRjRfBiP-3OnGg&s=10"},
@@ -110,6 +132,7 @@
             {n: "Void Watcher", url: "https://images.cults3d.com/FpLndx40oAirTek8cU1qBqJPWlk=/516x516/filters:no_upscale()/https://fbi.cults3d.com/uploaders/22935284/illustration-file/5c7bb7ff-eb23-4bc9-842b-b9ae45e10e9e/VoidWatcher_Cover.jpg"}
         ];
 
+        // --- AUTH & RECOVERY ---
         function login() {
             const n = document.getElementById('in-nick').value.trim();
             const p = document.getElementById('in-pass').value.trim();
@@ -123,11 +146,144 @@
             } else alert("WRONG PASSWORD");
         }
 
+        function openRecovery() {
+            document.getElementById('m-recovery').style.display = 'flex';
+            document.getElementById('rec-step2').style.display = 'none';
+            document.getElementById('rec-result').style.display = 'none';
+            document.getElementById('btn-get-code').style.display = 'block';
+            document.getElementById('btn-show-pass').style.display = 'none';
+        }
+
+        function generateRecoveryStep() {
+            const nick = document.getElementById('rec-nick').value.trim();
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            if(!users[nick]) return alert("USER NOT FOUND");
+            currentSessionCode = Math.floor(100000 + Math.random() * 900000).toString();
+            document.getElementById('generated-code').innerText = currentSessionCode;
+            document.getElementById('rec-step2').style.display = 'block';
+            document.getElementById('btn-get-code').style.display = 'none';
+            document.getElementById('btn-show-pass').style.display = 'block';
+        }
+
+        function finalRecover() {
+            const verify = document.getElementById('rec-verify').value.trim();
+            const nick = document.getElementById('rec-nick').value.trim();
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            if(verify === currentSessionCode) {
+                const res = document.getElementById('rec-result');
+                res.innerText = "PASSWORD: " + users[nick].pass;
+                res.style.display = 'block';
+            } else { alert("WRONG CODE"); }
+        }
+
+        function closeRecovery() { document.getElementById('m-recovery').style.display = 'none'; }
+
+        // --- SAVE & UI ---
+        function saveUser() {
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            users[user.nick] = user; // Сохраняем прогресс (XP, Karma и т.д.) в базу
+            localStorage.setItem(DB_U, JSON.stringify(users));
+            localStorage.setItem('sys_session', JSON.stringify(user)); // Синхронизируем текущую сессию
+        }
+
+        function refreshUI() {
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            if(user && users[user.nick]) {
+                user = { ...users[user.nick], nick: user.nick };
+                document.getElementById('ui-nick').innerText = user.nick;
+                document.getElementById('ui-lvl-header').innerText = "L" + (Math.floor(user.xp / 100) + 1);
+                document.getElementById('ui-karma').innerText = `${user.karma || 0} 💀`;
+                document.getElementById('ui-ava').innerHTML = drawAva(user.nick, user.ava);
+            }
+        }
+
         function init() {
             document.getElementById('ui-auth').style.display = 'none';
             document.getElementById('ui-header').style.display = 'flex';
             document.getElementById('ui-nav').style.display = 'flex';
             showTab('comm'); refreshUI();
+        }
+
+        // --- ACTIONS ---
+        function sendMsg() {
+            const t = document.getElementById('in-msg').value.trim();
+            if(!t) return;
+            user.xp += 10;
+            saveUser(); // Сразу сохраняем XP
+            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
+            msgs.push({ n: user.nick, t: t });
+            localStorage.setItem(DB_M, JSON.stringify(msgs));
+            document.getElementById('in-msg').value = '';
+            renderChat(); refreshUI();
+        }
+
+        function submitPost() {
+            const t = document.getElementById('post-title').value.trim();
+            const txt = document.getElementById('post-text').value.trim();
+            if(!t || !txt) return;
+            user.xp += 20;
+            saveUser(); // Сохраняем XP за пост
+            let posts = JSON.parse(localStorage.getItem(DB_P) || '[]');
+            posts.push({ id: Date.now(), author: user.nick, title: t, text: txt, likes: 0, dislikes: 0, voters: {} });
+            localStorage.setItem(DB_P, JSON.stringify(posts));
+            closePostEditor(); showTab('posts'); refreshUI();
+        }
+
+        function vote(postId, type) {
+            let posts = JSON.parse(localStorage.getItem(DB_P) || '[]');
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            const post = posts.find(p => p.id === postId);
+            if(!post || post.author === user.nick) return;
+            if(!post.voters) post.voters = {};
+            const cur = post.voters[user.nick];
+            if(type === 'up') {
+                if(cur === 'up') return;
+                if(cur === 'down') post.dislikes--;
+                post.likes++; post.voters[user.nick] = 'up';
+                users[post.author].karma++;
+            } else {
+                if(cur === 'down') return;
+                if(cur === 'up') post.likes--;
+                post.dislikes++; post.voters[user.nick] = 'down';
+                users[post.author].karma--;
+            }
+            localStorage.setItem(DB_P, JSON.stringify(posts));
+            localStorage.setItem(DB_U, JSON.stringify(users));
+            renderPosts(); refreshUI();
+        }
+
+        // --- RENDERS & OTHERS ---
+        function renderPosts() {
+            const wall = document.getElementById('post-wall');
+            const search = document.getElementById('post-search').value.toLowerCase();
+            let posts = JSON.parse(localStorage.getItem(DB_P) || '[]');
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            wall.innerHTML = posts.filter(p => p.title.toLowerCase().includes(search)).slice().reverse().map(p => {
+                const u = users[p.author] || {};
+                const v = p.voters ? p.voters[user.nick] : null;
+                return `<div class="post-article">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                        <div class="ava" style="width:25px; height:25px; font-size:10px;">${drawAva(p.author, u.ava)}</div>
+                        <span style="font-size:10px; color:#666;">@${p.author}</span>
+                    </div>
+                    <div class="post-header">${p.title}</div>
+                    <div style="font-size:13px; color:#ccc; white-space:pre-wrap; margin-top:5px;">${p.text}</div>
+                    <div class="post-footer">
+                        <button class="vote-btn ${v==='up'?'active-up':''}" onclick="vote(${p.id}, 'up')">💀 UP (${p.likes||0})</button>
+                        <button class="vote-btn ${v==='down'?'active-down':''}" onclick="vote(${p.id}, 'down')">🦴 DOWN (${p.dislikes||0})</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderChat() {
+            const wall = document.getElementById('wall');
+            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
+            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
+            wall.innerHTML = msgs.slice().reverse().map(m => {
+                const u = users[m.n] || {};
+                return `<div class="item-card" style="border-left:2px solid #f00; padding:10px; margin-top:10px; background:#111; display:flex; gap:10px;"><div class="ava">${drawAva(m.n, u.ava)}</div><div><small>@${m.n} ${u.title?`[${u.title}]`:''}</small><div>${m.t}</div></div></div>`;
+            }).join('');
         }
 
         function showTab(tab) {
@@ -140,126 +296,24 @@
         }
 
         function drawAva(n, a) { return (a && a.startsWith('http')) ? `<img src="${a}" onerror="this.src='';this.parentElement.innerText='${n[0]}'">` : n[0].toUpperCase(); }
-
-        function refreshUI() {
-            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            user = { ...users[user.nick], nick: user.nick };
-            document.getElementById('ui-nick').innerText = user.nick;
-            document.getElementById('ui-lvl-header').innerText = "L" + (Math.floor(user.xp / 100) + 1);
-            document.getElementById('ui-karma').innerText = `${user.karma || 0} 💀`;
-            document.getElementById('ui-ava').innerHTML = drawAva(user.nick, user.ava);
-        }
-
-        // --- POST SYSTEM ---
-        function openPostEditor() { closeProfile(); document.getElementById('m-post-editor').style.display = 'flex'; }
-        function closePostEditor() { document.getElementById('m-post-editor').style.display = 'none'; }
-
-        function submitPost() {
-            const title = document.getElementById('post-title').value.trim();
-            const text = document.getElementById('post-text').value.trim();
-            if(!title || !text) return alert("Fill all fields!");
-
-            let posts = JSON.parse(localStorage.getItem(DB_P) || '[]');
-            posts.push({
-                id: Date.now(),
-                author: user.nick,
-                title: title,
-                text: text,
-                date: new Date().toLocaleString()
-            });
-            localStorage.setItem(DB_P, JSON.stringify(posts));
-            
-            user.xp += 20;
-            saveUser();
-            
-            document.getElementById('post-title').value = '';
-            document.getElementById('post-text').value = '';
-            closePostEditor();
-            showTab('posts');
-        }
-
-        function renderPosts() {
-            const wall = document.getElementById('post-wall');
-            const search = document.getElementById('post-search').value.toLowerCase();
-            let posts = JSON.parse(localStorage.getItem(DB_P) || '[]');
-            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            
-            const filtered = posts.filter(p => p.title.toLowerCase().includes(search));
-            wall.innerHTML = filtered.length ? '' : '<div style="text-align:center;color:#333;">EMPTY...</div>';
-            
-            filtered.slice().reverse().forEach(p => {
-                const authorData = users[p.author] || {};
-                wall.innerHTML += `
-                    <div class="post-article">
-                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                            <div class="ava" style="width:25px; height:25px; font-size:10px;">${drawAva(p.author, authorData.ava)}</div>
-                            <span style="font-size:10px; color:#666;">@${p.author} • ${p.date}</span>
-                        </div>
-                        <div class="post-header">${p.title}</div>
-                        <div style="font-size:13px; color:#ccc; white-space:pre-wrap;">${p.text}</div>
-                    </div>`;
-            });
-        }
-
-        // --- CHAT & PROFILE ---
-        function sendMsg() {
-            const txt = document.getElementById('in-msg').value.trim(); if(!txt) return;
-            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
-            user.xp += 10; saveUser();
-            msgs.push({ n: user.nick, t: txt });
-            localStorage.setItem(DB_M, JSON.stringify(msgs));
-            document.getElementById('in-msg').value = ''; renderChat(); refreshUI();
-        }
-
-        function renderChat() {
-            const wall = document.getElementById('wall');
-            let msgs = JSON.parse(localStorage.getItem(DB_M) || '[]');
-            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            wall.innerHTML = msgs.slice().reverse().map(m => {
-                const u = users[m.n] || {};
-                return `<div class="item-card"><div class="ava">${drawAva(m.n, u.ava)}</div><div><small>@${m.n} ${u.title?`[${u.title}]`:''}</small><div>${m.t}</div></div></div>`;
-            }).join('');
-        }
-
+        function logout() { localStorage.removeItem('sys_session'); location.reload(); }
         function openProfile() {
             document.getElementById('m-profile').style.display = 'flex';
             document.getElementById('m-nick-display').innerText = user.nick;
-            document.getElementById('m-ava-box').innerHTML = drawAva(user.nick, user.ava);
-            
             const aSel = document.getElementById('m-ava-select');
-            aSel.innerHTML = '<option value="">DEFAULT</option>';
-            (user.avaInventory || []).forEach(name => {
-                const data = allAvas.find(a => a.n === name);
-                if(data) aSel.innerHTML += `<option value="${data.url}" ${user.ava===data.url?'selected':''}>${name}</option>`;
-            });
-
+            aSel.innerHTML = '<option value="">DEFAULT</option>' + (user.avaInventory || []).map(name => {
+                const d = allAvas.find(a => a.n === name);
+                return d ? `<option value="${d.url}" ${user.ava===d.url?'selected':''}>${name}</option>` : '';
+            }).join('');
             const tSel = document.getElementById('m-title-select');
-            tSel.innerHTML = '<option value="">NO TITLE</option>';
-            (user.inventory || []).forEach(t => {
-                tSel.innerHTML += `<option value="${t}" ${user.title===t?'selected':''}>${t}</option>`;
-            });
+            tSel.innerHTML = '<option value="">NO TITLE</option>' + (user.inventory || []).map(t => `<option value="${t}" ${user.title===t?'selected':''}>${t}</option>`).join('');
+            previewAva();
         }
-
-        function previewAva() { 
-            const url = document.getElementById('m-ava-select').value;
-            document.getElementById('m-ava-box').innerHTML = drawAva(user.nick, url);
-        }
-
-        function saveProfileChanges() {
-            user.ava = document.getElementById('m-ava-select').value;
-            user.title = document.getElementById('m-title-select').value;
-            saveUser(); refreshUI(); renderChat(); closeProfile();
-        }
-
-        function saveUser() {
-            let users = JSON.parse(localStorage.getItem(DB_U) || '{}');
-            users[user.nick] = user;
-            localStorage.setItem(DB_U, JSON.stringify(users));
-            localStorage.setItem('sys_session', JSON.stringify(user));
-        }
-
-        function logout() { localStorage.removeItem('sys_session'); location.reload(); }
+        function previewAva() { document.getElementById('m-ava-box').innerHTML = drawAva(user.nick, document.getElementById('m-ava-select').value); }
+        function saveProfileChanges() { user.ava = document.getElementById('m-ava-select').value; user.title = document.getElementById('m-title-select').value; saveUser(); refreshUI(); renderChat(); closeProfile(); }
         function closeProfile() { document.getElementById('m-profile').style.display = 'none'; }
+        function openPostEditor() { closeProfile(); document.getElementById('m-post-editor').style.display = 'flex'; }
+        function closePostEditor() { document.getElementById('m-post-editor').style.display = 'none'; }
         window.onload = () => { if(localStorage.getItem('sys_session')) { user = JSON.parse(localStorage.getItem('sys_session')); init(); } };
     </script>
 </body>
